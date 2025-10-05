@@ -1,0 +1,287 @@
+{
+  "common": {
+    "loading": "加载中...",
+    "error": "错误",
+    "success": "成功",
+    "cancel": "取消",
+    "confirm": "确认",
+    "save": "保存",
+    "saving": "保存中...",
+    "uploading": "上传中...",
+    "delete": "删除",
+    "edit": "编辑",
+    "back": "返回",
+    "submit": "提交",
+    "search": "搜索",
+    "noData": "暂无数据",
+    "reachedEnd": "已经到底了"
+  },
+  "auth": {
+    "login": {
+      "title": "登录您的账户",
+      "subtitle": "欢迎回到装修平台",
+      "email": "电子邮件",
+      "emailPlaceholder": "email@example.com",
+      "password": "密码",
+      "passwordPlaceholder": "密码",
+      "submit": "登录",
+      "signingIn": "登录中...",
+      "noAccount": "还没有账户？",
+      "register": "注册"
+    },
+    "register": {
+      "title": "创建您的账户",
+      "subtitle": "加入我们的装修平台",
+      "username": "用户名",
+      "usernamePlaceholder": "username",
+      "email": "电子邮件",
+      "emailPlaceholder": "email@example.com",
+      "password": "密码",
+      "confirmPassword": "确认密码",
+      "role": "我是",
+      "roleHomeowner": "房主",
+      "roleProvider": "服务提供商",
+      "providerType": "服务商类型",
+      "providerTypePlaceholder": "选择服务商类型",
+      "fullName": "全名",
+      "phone": "电话",
+      "submit": "注册",
+      "creating": "创建账户中...",
+      "hasAccount": "已经有账户？",
+      "login": "登录",
+      "errors": {
+        "usernameLength": "用户名至少需要 3 个字符",
+        "usernameFormat": "用户名只能包含字母、数字和下划线",
+        "emailInvalid": "无效的电子邮件地址",
+        "passwordLength": "密码至少需要 8 个字符",
+        "passwordMismatch": "密码不匹配",
+        "providerTypeRequired": "请选择服务商类型"
+      }
+    },
+    "dashboard": {
+      "title": "装修平台",
+      "subtitle": "企业级 React 应用程序，使用 Redux Toolkit 和 Supabase",
+      "welcome": "欢迎，",
+      "logout": "登出",
+      "profile": {
+        "title": "用户资料",
+        "subtitle": "个人详细信息和信息",
+        "username": "用户名",
+        "email": "电子邮件地址",
+        "role": "角色",
+        "providerType": "服务商类型",
+        "fullName": "全名",
+        "phone": "电话号码",
+        "accountStatus": "账户状态",
+        "active": "启用中",
+        "inactive": "未启用"
+      }
+    },
+    "errors": {
+      "invalidCredentials": "无效的登录凭证",
+      "accountDeactivated": "账户已停用",
+      "usernameTaken": "用户名已被使用",
+      "emailExists": "电子邮件已存在",
+      "networkError": "网络错误，请稍后再试",
+      "unknownError": "发生未知错误"
+    }
+  },
+  "forum": {
+    "title": "社区论坛",
+    "newPost": "新帖子",
+    "categories": {
+      "all": "所有帖子",
+      "renovationQA": "装修问答",
+      "renovationUnboxing": "装修开箱",
+      "goodStuffRecommendations": "好物推荐",
+      "maintenanceIssues": "维护问题"
+    },
+    "post": {
+      "create": "创建帖子",
+      "edit": "编辑帖子",
+      "delete": "删除帖子",
+      "category": "分类",
+      "categoryPlaceholder": "选择分类",
+      "categoryRequired": "分类",
+      "title": "标题",
+      "titlePlaceholder": "您的帖子主题是什么？",
+      "titleRequired": "标题",
+      "content": "内容",
+      "contentPlaceholder": "分享您的想法...",
+      "contentRequired": "内容",
+      "tags": "标签（逗号分隔）",
+      "tagsPlaceholder": "装修, 技巧, DIY",
+      "media": "照片/视频",
+      "mediaSelected": "已选择 {{count}} 个文件",
+      "posting": "发布中...",
+      "post": "发布"
+    },
+    "card": {
+      "like": "赞",
+      "comment": "评论",
+      "repost": "转发",
+      "bookmark": "收藏"
+    },
+    "detail": {
+      "backToForum": "返回论坛",
+      "notFound": "找不到帖子",
+      "comments": "评论 ({{count}})"
+    },
+    "comment": {
+      "add": "添加评论...",
+      "reply": "回复",
+      "replyTo": "回复...",
+      "submit": "评论",
+      "noComments": "还没有评论。成为第一个评论的人！"
+    }
+  },
+  "profile": {
+    "posts": "帖子",
+    "followers": "粉丝",
+    "following": "关注中",
+    "follow": "关注",
+    "isFollowing": "关注中",
+    "message": "消息",
+    "notFound": "找不到用户",
+    "backToForum": "返回论坛",
+    "about": "关于",
+    "noFollowers": "还没有粉丝",
+    "noFollowing": "还没有关注任何人",
+    "noBookmarks": "还没有收藏",
+    "tabs": {
+      "overview": "概览",
+      "edit": "编辑",
+      "posts": "帖子",
+      "followers": "粉丝",
+      "following": "关注中",
+      "bookmarks": "收藏"
+    },
+    "stats": {
+      "posts": "帖子",
+      "followers": "粉丝",
+      "following": "关注中",
+      "bookmarks": "收藏"
+    },
+    "edit": {
+      "title": "编辑个人资料",
+      "avatar": "头像",
+      "username": "用户名",
+      "fullName": "全名",
+      "bio": "个人简介",
+      "bioPlaceholder": "介绍一下你自己...",
+      "location": "位置",
+      "locationPlaceholder": "城市, 国家",
+      "website": "网站",
+      "company": "公司",
+      "saved": "个人资料已更新！"
+    },
+    "noPosts": "还没有帖子",
+    "followersListSoon": "粉丝列表即将推出",
+    "followingListSoon": "关注列表即将推出"
+  },
+  "messages": {
+    "title": "私信",
+    "directMessage": "私人消息",
+    "noMessages": "还没有消息。开始对话吧！",
+    "typePlaceholder": "输入消息...",
+    "send": "发送"
+  },
+  "inspiration": {
+    "header": {
+      "label": "灵感流",
+      "light": "亮色模式",
+      "dark": "暗色模式"
+    },
+    "sidebar": {
+      "categories": "类别",
+      "active": "已选",
+      "locations": "地区",
+      "actions": "快捷筛选",
+      "rating": "评分 4.5+",
+      "clear": "重置筛选"
+    },
+    "hero": {
+      "eyebrow": "精选空间",
+      "title": "发现顶级设计师的生活灵感",
+      "subtitle": "浏览来自认证服务商的精选作品，根据你的收藏实时推荐。",
+      "searchPlaceholder": "按标签或氛围搜索（如：禅意、日落、大理石）",
+      "search": "搜索"
+    },
+    "filters": {
+      "types": {
+        "sleeproom": "卧室",
+        "kitchen": "厨房"
+      },
+      "locations": {
+        "hk": "中国香港",
+        "uk": "英国"
+      },
+      "price": {
+        "any": "全部预算",
+        "mid": "5万以下",
+        "high": "5万-15万",
+        "lux": "15万以上"
+      }
+    },
+    "card": {
+      "collect": "收藏",
+      "collected": "已收藏",
+      "like": "点赞",
+      "liked": "已点赞",
+      "pinned": "置顶",
+      "featured": "精选",
+      "sponsored": "赞助",
+      "rating": "{{rating}} · {{count}} 条评价",
+      "follow": "关注",
+      "message": "私信",
+      "collects": "{{count}} 次收藏",
+      "likes": "{{count}} 次点赞",
+      "share": "分享"
+    },
+    "carousel": {
+      "close": "关闭",
+      "imageAlt": "作品预览图",
+      "previous": "上一张",
+      "next": "下一张",
+      "slide": "第 {{index}} 张"
+    },
+    "sort": {
+      "newest": "最新",
+      "popular": "最热",
+      "personalized": "为你推荐",
+      "total": "共 {{count}} 条灵感"
+    },
+    "loading": "正在加载更多灵感...",
+    "scrollHint": "下滑查看更多",
+    "share": {
+      "description": "一起来看看这则灵感：{{title}}"
+    }
+  },
+  "error": {
+    "unknown": "发生未知错误",
+    "network": "网络连接错误，请检查您的网络",
+    "timeout": "请求超时，请稍后再试",
+    "unauthorized": "您没有权限执行此操作",
+    "notFound": "找不到请求的资源",
+    "duplicate": "数据已存在",
+    "foreignKeyViolation": "数据关联错误",
+    "notNullViolation": "必填字段不能为空",
+    "tableNotFound": "数据表不存在",
+    "insufficientPrivilege": "权限不足",
+    "undefinedFunction": "功能未定义",
+    "invalidTextRepresentation": "数据格式错误",
+    "noContent": "没有内容",
+    "fileTooLarge": "文件太大，请上传较小的文件",
+    "invalidFileType": "不支持的文件类型",
+    "storageQuotaExceeded": "存储空间已满",
+    "featureUnavailable": "功能暂时无法使用",
+    "featureError": "{{feature}} 功能发生错误",
+    "somethingWrong": "发生错误",
+    "unexpectedError": "发生意外错误",
+    "reloadPage": "重新加载页面",
+    "accessDenied": "拒绝访问",
+    "noPermission": "您没有权限访问此页面",
+    "goBack": "返回",
+    "duplicateProfile": "用户资料已存在"
+  }
+}

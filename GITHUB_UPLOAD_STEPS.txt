@@ -1,0 +1,37 @@
+GITHUB UPLOAD STEPS
+===================
+
+1. Make script executable:
+   chmod +x upload-to-github.sh
+
+2. Run the script:
+   ./upload-to-github.sh
+
+   OR with custom commit message:
+   ./upload-to-github.sh "Your custom commit message"
+
+3. When prompted for credentials:
+   Username: desmond1119
+   Password: <GitHub Personal Access Token>
+
+   To create a token:
+   - Go to: https://github.com/settings/tokens
+   - Click "Generate new token (classic)"
+   - Select scopes: repo (full control)
+   - Copy the token and use it as password
+
+SECURITY CHECKLIST
+==================
+✓ .env files ignored
+✓ node_modules excluded
+✓ No API keys in code
+✓ Use environment variables
+✓ Never commit .env to git
+
+MANUAL ALTERNATIVE
+==================
+git add .
+git commit -m "Update with new features from AI"
+git branch -M main
+git remote add origin https://github.com/desmond1119/basic_homedia.git
+git push -u origin main

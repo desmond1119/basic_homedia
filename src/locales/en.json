@@ -1,0 +1,504 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "saving": "Saving...",
+    "uploading": "Uploading...",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "submit": "Submit",
+    "search": "Search",
+    "noData": "No data available",
+    "reachedEnd": "You've reached the end"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign In",
+      "welcomeBack": "Welcome back",
+      "subtitle": "Sign in to your account to continue",
+      "email": "Email",
+      "password": "Password",
+      "emailPlaceholder": "Enter your email",
+      "passwordPlaceholder": "Enter your password",
+      "submit": "Sign In",
+      "signIn": "Sign In",
+      "signingIn": "Signing in...",
+      "forgotPassword": "Forgot Password?",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign Up",
+      "signUpLink": "Sign up for free",
+      "or": "or",
+      "error": "Invalid email or password",
+      "success": "Login successful! Redirecting...",
+      "hero": {
+        "title": "Discover Amazing Designs",
+        "subtitle": "Join thousands of homeowners and professionals sharing renovation inspiration"
+      }
+    },
+    "register": {
+      "title": "Create your account",
+      "subtitle": "Join our renovation platform",
+      "username": "Username",
+      "usernamePlaceholder": "username",
+      "email": "Email",
+      "emailPlaceholder": "email@example.com",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "submit": "Sign Up",
+      "creating": "Creating account...",
+      "hasAccount": "Already have an account?",
+      "login": "Sign in",
+      "success": "Registration successful! Redirecting...",
+      "error": "Registration failed. Please try again.",
+      "role": "I am a",
+      "roleHomeowner": "Homeowner",
+      "roleProvider": "Service Provider",
+      "providerType": "Provider Type",
+      "providerTypePlaceholder": "Select provider type",
+      "fullName": "Full Name",
+      "phone": "Phone",
+      "hero": {
+        "title": "Start Your Renovation Journey",
+        "subtitle": "Connect with top professionals and get inspired"
+      },
+      "errors": {
+        "usernameLength": "Username must be at least 3 characters",
+        "usernameFormat": "Username can only contain letters, numbers, and underscores",
+        "emailInvalid": "Invalid email address",
+        "passwordLength": "Password must be at least 8 characters",
+        "passwordMismatch": "Passwords do not match",
+        "providerTypeRequired": "Please select a provider type"
+      }
+    },
+    "dashboard": {
+      "title": "Renovation Platform",
+      "subtitle": "Enterprise-grade React application with Redux Toolkit & Supabase",
+      "welcome": "Welcome,",
+      "logout": "Logout",
+      "profile": {
+        "title": "User Profile",
+        "subtitle": "Personal details and information",
+        "username": "Username",
+        "email": "Email address",
+        "role": "Role",
+        "providerType": "Provider Type",
+        "fullName": "Full name",
+        "phone": "Phone number",
+        "accountStatus": "Account Status",
+        "active": "Active",
+        "inactive": "Inactive"
+      }
+    },
+    "errors": {
+      "invalidCredentials": "Invalid login credentials",
+      "accountDeactivated": "Account is deactivated",
+      "usernameTaken": "Username is already taken",
+      "emailExists": "Email already exists",
+      "networkError": "Network error, please try again later",
+      "unknownError": "An unknown error occurred"
+    }
+  },
+  "forum": {
+    "title": "Community Forum",
+    "newPost": "New Post",
+    "categories": {
+      "all": "All Posts",
+      "renovationQA": "Renovation Q&A",
+      "renovationUnboxing": "Renovation Unboxing",
+      "goodStuffRecommendations": "Good Stuff Recommendations",
+      "maintenanceIssues": "Maintenance Issues"
+    },
+    "post": {
+      "create": "Create Post",
+      "edit": "Edit Post",
+      "delete": "Delete Post",
+      "category": "Category",
+      "categoryPlaceholder": "Select a category",
+      "categoryRequired": "Category",
+      "title": "Title",
+      "titlePlaceholder": "What's your post about?",
+      "titleRequired": "Title",
+      "content": "Content",
+      "contentPlaceholder": "Share your thoughts...",
+      "contentRequired": "Content",
+      "tags": "Tags (comma-separated)",
+      "tagsPlaceholder": "renovation, tips, diy",
+      "media": "Photos/Videos",
+      "mediaSelected": "{{count}} file(s) selected",
+      "posting": "Posting...",
+      "post": "Post"
+    },
+    "card": {
+      "like": "Like",
+      "comment": "Comment",
+      "repost": "Repost",
+      "bookmark": "Bookmark"
+    },
+    "detail": {
+      "backToForum": "Back to forum",
+      "notFound": "Post not found",
+      "comments": "Comments ({{count}})"
+    },
+    "comment": {
+      "add": "Add a comment...",
+      "reply": "Reply",
+      "replyTo": "Write a reply...",
+      "submit": "Comment",
+      "noComments": "No comments yet. Be the first to comment!"
+    }
+  },
+  "profile": {
+    "posts": "Posts",
+    "followers": "Followers",
+    "following": "Following",
+    "follow": "Follow",
+    "isFollowing": "Following",
+    "message": "Message",
+    "notFound": "User not found",
+    "backToForum": "Back to forum",
+    "about": "About",
+    "noFollowers": "No followers yet",
+    "noFollowing": "Not following anyone yet",
+    "noBookmarks": "No bookmarks yet",
+    "tabs": {
+      "overview": "Overview",
+      "edit": "Edit",
+      "posts": "Posts",
+      "followers": "Followers",
+      "following": "Following",
+      "bookmarks": "Bookmarks"
+    },
+    "stats": {
+      "posts": "Posts",
+      "followers": "Followers",
+      "following": "Following",
+      "bookmarks": "Bookmarks",
+      "collected": "Collected",
+      "responses": "Responses"
+    },
+    "collections": {
+      "title": "Collections",
+      "images": "Images",
+      "companies": "Companies",
+      "portfoliosCount": "{{count}} portfolios",
+      "noImages": "No collected images yet",
+      "noCompanies": "No followed companies yet"
+    },
+    "edit": {
+      "button": "Edit Profile",
+      "title": "Edit Profile",
+      "avatar": "Avatar",
+      "changeAvatar": "Change Avatar",
+      "username": "Username",
+      "fullName": "Full Name",
+      "bio": "Bio",
+      "bioPlaceholder": "Tell us about yourself...",
+      "location": "Location",
+      "locationPlaceholder": "City, Country",
+      "website": "Website",
+      "company": "Company",
+      "save": "Save Changes",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "saved": "Profile updated!",
+      "errors": {
+        "usernameTooShort": "Username must be at least 3 characters",
+        "usernameInvalid": "Username can only contain letters, numbers, and underscores",
+        "bioTooLong": "Bio must be less than 500 characters",
+        "avatarTooLarge": "Avatar image must be less than 5MB"
+      }
+    },
+    "noPosts": "No posts yet",
+    "followersListSoon": "Followers list coming soon",
+    "followingListSoon": "Following list coming soon"
+  },
+  "messages": {
+    "title": "Messages",
+    "directMessage": "Direct Message",
+    "noMessages": "No messages yet. Start a conversation!",
+    "typePlaceholder": "Type a message...",
+    "send": "Send"
+  },
+  "provider": {
+    "notFound": "Provider not found",
+    "location": "Hong Kong",
+    "reviewsLabel": "reviews",
+    "stats": {
+      "projects": "Projects Completed",
+      "experience": "Years Experience",
+      "team": "Team Size",
+      "founded": "Founded",
+      "years": "years",
+      "year": ""
+    },
+    "services": {
+      "title": "Services",
+      "residential": "Residential Design",
+      "commercial": "Commercial Design",
+      "office": "Office Design",
+      "interior": "Interior Decoration",
+      "furniture": "Furniture & Styling",
+      "renovation": "Renovation",
+      "lighting": "Lighting Design",
+      "subscription": "Custom Furniture"
+    },
+    "pricing": {
+      "title": "Pricing",
+      "range": "Price Range"
+    },
+    "contact": {
+      "title": "Contact"
+    },
+    "actions": {
+      "message": "Contact Us",
+      "book": "Book Service"
+    },
+    "ratings": {
+      "design": "Design Quality",
+      "construction": "Construction Quality",
+      "service": "Service Attitude",
+      "communication": "Communication",
+      "timeline": "Timeline",
+      "value": "Value for Money"
+    },
+    "reviews": {
+      "title": "Reviews & Ratings",
+      "quality": "Quality",
+      "communication": "Communication",
+      "timeliness": "Timeliness",
+      "value": "Value",
+      "verified": "Verified",
+      "showMore": "Show all reviews"
+    },
+    "portfolio": {
+      "title": "Portfolio"
+    },
+    "edit": {
+      "button": "Edit Profile",
+      "title": "Edit Provider Profile",
+      "basicInfo": "Basic Information",
+      "pricing": "Pricing",
+      "stats": "Company Stats",
+      "socialLinks": "Social Links",
+      "adminControls": "Admin Controls",
+      "logo": "Company Logo",
+      "uploadLogo": "Upload Logo",
+      "companyName": "Company Name",
+      "bio": "Bio",
+      "priceMin": "Minimum Price",
+      "priceMax": "Maximum Price",
+      "currency": "Currency",
+      "approvedStatus": "Profile Approved",
+      "save": "Save Changes",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "success": "Profile updated successfully",
+      "error": "Failed to update profile",
+      "social": {
+        "phone": "Phone",
+        "email": "Email",
+        "website": "Website",
+        "facebook": "Facebook",
+        "instagram": "Instagram",
+        "youtube": "YouTube"
+      },
+      "errors": {
+        "companyNameRequired": "Company name is required",
+        "priceMinInvalid": "Minimum price must be positive",
+        "priceMaxLessThanMin": "Maximum price must be greater than minimum",
+        "teamSizeInvalid": "Team size must be positive"
+      }
+    }
+  },
+  "portfolio": {
+    "upload": {
+      "step1Title": "Project Details",
+      "step2Title": "Upload Images",
+      "title": "Project Title",
+      "address": "Address",
+      "areaSqft": "Area (sq ft)",
+      "totalCost": "Total Cost",
+      "description": "Description",
+      "next": "Next",
+      "dropFiles": "Drop files or click to upload",
+      "maxFiles": "Max {{count}} files, 5MB each",
+      "maxFilesError": "Maximum 30 files allowed",
+      "selectCover": "Select cover image",
+      "cover": "Cover",
+      "upload": "Upload",
+      "success": "Portfolio Uploaded!",
+      "pendingApproval": "Your portfolio is pending admin approval",
+      "viewPortfolios": "View My Portfolios"
+    },
+    "list": {
+      "title": "Portfolios",
+      "sortNewest": "Newest",
+      "sortPopular": "Most Popular",
+      "noMore": "No more portfolios",
+      "empty": "No portfolios yet"
+    },
+    "analytics": {
+      "impressions": "Total Views",
+      "collects": "Total Collects",
+      "engagement": "Engagement Rate",
+      "impressionsChart": "Views (Last 30 Days)",
+      "collectsChart": "Collects (Last 30 Days)"
+    }
+  },
+  "inspiration": {
+    "header": {
+      "label": "Inspiration Feed",
+      "light": "Light Mode",
+      "dark": "Dark Mode"
+    },
+    "sidebar": {
+      "categories": "Categories",
+      "active": "Active",
+      "locations": "Locations",
+      "actions": "Quick Filters",
+      "rating": "Rating 4.5+",
+      "clear": "Clear Filters"
+    },
+    "hero": {
+      "tagline": "CURATED SPACES",
+      "eyebrow": "CURATED SPACES",
+      "title": "Discover living spaces by top providers",
+      "subtitle": "Browse a personalized feed of renovation inspiration sourced from verified providers across the globe.",
+      "searchPlaceholder": "Search by tag or vibe (e.g. zen, sunset, marble)"
+    },
+    "filters": {
+      "title": "Filters",
+      "category": "Category",
+      "priceRange": "Price Range",
+      "sortBy": "Sort By",
+      "allCategories": "All Categories",
+      "anyPrice": "Any Price"
+    },
+    "type": {
+      "sleeproom": "Bedroom",
+      "kitchen": "Kitchen",
+      "living": "Living Room",
+      "bathroom": "Bathroom"
+    },
+    "priceRange": {
+      "entry": "Entry Level ($)",
+      "premium": "Premium ($$)",
+      "luxury": "Luxury ($$$)"
+    },
+    "sort": {
+      "trending": "Trending",
+      "newest": "Newest",
+      "popular": "Most Popular"
+    },
+    "actions": {
+      "like": "Like",
+      "collect": "Save",
+      "share": "Share",
+      "follow": "Follow",
+      "message": "Message"
+    },
+    "hero": {
+      "title": "Discover Your Dream Space",
+      "subtitle": "Get inspired by thousands of home designs and connect with top renovation professionals",
+      "signUp": "Sign up for free",
+      "learnMore": "Learn more",
+      "features": {
+        "discover": "Discover Ideas",
+        "discoverDesc": "Browse thousands of curated home designs and renovation projects",
+        "grow": "Grow Your Business",
+        "growDesc": "Showcase your work and reach homeowners looking for renovation services",
+        "connect": "Connect & Collaborate",
+        "connectDesc": "Build relationships with clients and other professionals in the industry"
+      }
+    },
+    "card": {
+      "collect": "Collect",
+      "collected": "Collected",
+      "like": "Like",
+      "liked": "Liked",
+      "pinned": "Pinned",
+      "featured": "Featured",
+      "sponsored": "Sponsored",
+      "rating": "{{rating}} · {{count}} reviews",
+      "follow": "Follow",
+      "message": "Message",
+      "collects": "{{count}} collects",
+      "likes": "{{count}} likes",
+      "share": "Share"
+    },
+    "carousel": {
+      "close": "Close",
+      "imageAlt": "Portfolio preview image",
+      "previous": "Previous slide",
+      "next": "Next slide",
+      "slide": "Slide {{index}}"
+    },
+    "sort": {
+      "newest": "Newest",
+      "popular": "Popular",
+      "personalized": "For You",
+      "total": "{{count}} inspirations"
+    },
+    "loading": {
+      "more": "Loading more inspirations...",
+      "end": "You've reached the end!"
+    },
+    "empty": {
+      "title": "No inspirations yet",
+      "subtitle": "Check back later or try adjusting your filters",
+      "reload": "Reload Page"
+    },
+    "scrollHint": "Scroll to explore more",
+    "share": {
+      "description": "Check out this inspiration: {{title}}"
+    }
+  },
+  "nav": {
+    "home": "Home",
+    "browseProviders": "Browse Providers",
+    "categoriesMenu": "Categories",
+    "profile": "Profile",
+    "collections": "Collections",
+    "demands": "My Demands",
+    "uploadPortfolio": "Upload Portfolio",
+    "analytics": "Analytics",
+    "messages": "Messages",
+    "manageCategories": "Manage Categories",
+    "approve": "Approve Content",
+    "usersList": "Users List",
+    "settings": "Settings",
+    "login": "Login",
+    "signup": "Sign Up",
+    "logout": "Logout",
+    "searchPlaceholder": "Search inspiration...",
+    "categories": {
+      "sleeproom": "Bedroom",
+      "kitchen": "Kitchen",
+      "living": "Living Room",
+      "bathroom": "Bathroom"
+    }
+  },
+  "error": {
+    "unknown": "An unexpected error occurred",
+    "network": "Network connection failed. Please check your internet connection",
+    "timeout": "Request timed out. Please try again",
+    "notFound": "Resource not found",
+    "unauthorized": "You don't have permission to perform this action",
+    "duplicate": "This record already exists",
+    "foreignKeyViolation": "Cannot delete: related records exist",
+    "tableNotFound": "Database table not found",
+    "insufficientPrivilege": "Insufficient database privileges",
+    "somethingWrong": "Something went wrong",
+    "unexpectedError": "An unexpected error occurred",
+    "reloadPage": "Reload Page",
+    "accessDenied": "Access Denied",
+    "noPermission": "You don't have permission to access this page",
+    "goBack": "Go Back",
+    "duplicateProfile": "Profile already exists"
+  }
+}

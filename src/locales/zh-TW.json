@@ -1,0 +1,520 @@
+{
+  "common": {
+    "loading": "載入中...",
+    "error": "錯誤",
+    "success": "成功",
+    "cancel": "取消",
+    "confirm": "確認",
+    "save": "儲存",
+    "saving": "儲存中...",
+    "uploading": "上傳中...",
+    "delete": "刪除",
+    "edit": "編輯",
+    "back": "返回",
+    "reload": "重新載入",
+    "submit": "提交",
+    "search": "搜尋",
+    "noData": "暫無資料",
+    "reachedEnd": "已經到底了"
+  },
+  "auth": {
+    "login": {
+      "title": "登入您的帳戶",
+      "subtitle": "歡迎回到裝修平台",
+      "email": "電子郵件",
+      "emailPlaceholder": "email@example.com",
+      "password": "密碼",
+      "passwordPlaceholder": "密碼",
+      "submit": "登入",
+      "signIn": "登入",
+      "signingIn": "登入中...",
+      "welcomeBack": "歡迎回來",
+      "forgotPassword": "忘記密碼？",
+      "noAccount": "還沒有帳戶？",
+      "register": "註冊",
+      "signUpLink": "免費註冊",
+      "or": "或",
+      "error": "電子郵件或密碼無效",
+      "success": "登入成功！正在跳轉...",
+      "hero": {
+        "title": "發現驚艷設計",
+        "subtitle": "加入數千名房主和專業人士，分享裝修靈感"
+      }
+    },
+    "register": {
+      "title": "建立您的帳戶",
+      "subtitle": "加入我們的裝修平台",
+      "username": "使用者名稱",
+      "usernamePlaceholder": "username",
+      "email": "電子郵件",
+      "emailPlaceholder": "email@example.com",
+      "password": "密碼",
+      "confirmPassword": "確認密碼",
+      "role": "我是",
+      "roleHomeowner": "房主",
+      "roleProvider": "服務提供商",
+      "providerType": "服務商類型",
+      "providerTypePlaceholder": "選擇服務商類型",
+      "fullName": "全名",
+      "phone": "電話",
+      "submit": "註冊",
+      "creating": "建立帳戶中...",
+      "hasAccount": "已經有帳戶？",
+      "login": "登入",
+      "errors": {
+        "usernameLength": "使用者名稱至少需要 3 個字元",
+        "usernameFormat": "使用者名稱只能包含字母、數字和底線",
+        "emailInvalid": "無效的電子郵件地址",
+        "passwordLength": "密碼至少需要 8 個字元",
+        "passwordMismatch": "密碼不符合",
+        "providerTypeRequired": "請選擇服務商類型"
+      }
+    },
+    "dashboard": {
+      "title": "裝修平台",
+      "subtitle": "企業級 React 應用程式，使用 Redux Toolkit 和 Supabase",
+      "welcome": "歡迎，",
+      "logout": "登出",
+      "profile": {
+        "title": "使用者資料",
+        "subtitle": "個人詳細資料和資訊",
+        "username": "使用者名稱",
+        "email": "電子郵件地址",
+        "role": "角色",
+        "providerType": "服務商類型",
+        "fullName": "全名",
+        "phone": "電話號碼",
+        "accountStatus": "帳戶狀態",
+        "active": "啟用中",
+        "inactive": "未啟用"
+      }
+    },
+    "errors": {
+      "invalidCredentials": "無效的登入憑證",
+      "accountDeactivated": "帳戶已停用",
+      "usernameTaken": "使用者名稱已被使用",
+      "emailExists": "電子郵件已存在",
+      "networkError": "網路錯誤，請稍後再試",
+      "unknownError": "發生未知錯誤"
+    }
+  },
+  "forum": {
+    "title": "社群論壇",
+    "newPost": "新貼文",
+    "noPosts": "還沒有貼文",
+    "beFirst": "成為第一個發文的人！",
+    "stats": {
+      "posts": "貼文"
+    },
+    "categories": {
+      "all": "所有貼文",
+      "renovationQA": "裝修問答",
+      "renovationUnboxing": "裝修開箱",
+      "goodStuffRecommendations": "好物推薦",
+      "maintenanceIssues": "維護問題"
+    },
+    "post": {
+      "create": "建立貼文",
+      "edit": "編輯貼文",
+      "delete": "刪除貼文",
+      "notFound": "找不到貼文",
+      "category": "分類",
+      "categoryPlaceholder": "選擇分類",
+      "categoryRequired": "分類",
+      "title": "標題",
+      "titlePlaceholder": "您的貼文主題是什麼？",
+      "titleRequired": "標題",
+      "content": "內容",
+      "contentPlaceholder": "分享您的想法...",
+      "contentRequired": "內容",
+      "tags": "標籤（逗號分隔）",
+      "tagsPlaceholder": "裝修, 技巧, DIY",
+      "media": "照片/影片",
+      "mediaSelected": "已選擇 {{count}} 個檔案",
+      "posting": "發佈中...",
+      "post": "發佈"
+    },
+    "card": {
+      "like": "讚",
+      "comment": "評論",
+      "repost": "轉發",
+      "bookmark": "收藏"
+    },
+    "detail": {
+      "backToForum": "返回論壇",
+      "notFound": "找不到貼文",
+      "comments": "評論 ({{count}})"
+    },
+    "comment": {
+      "title": "評論",
+      "add": "新增評論...",
+      "placeholder": "分享您的想法...",
+      "reply": "回覆",
+      "replyPlaceholder": "寫下您的回覆...",
+      "submit": "發表評論",
+      "noComments": "還沒有評論。成為第一個評論的人！"
+    }
+  },
+  "profile": {
+    "posts": "貼文",
+    "followers": "粉絲",
+    "following": "關注中",
+    "follow": "關注",
+    "isFollowing": "關注中",
+    "message": "訊息",
+    "notFound": "找不到使用者",
+    "backToForum": "返回論壇",
+    "about": "關於",
+    "noFollowers": "還沒有粉絲",
+    "noFollowing": "還沒有關注任何人",
+    "noBookmarks": "還沒有收藏",
+    "tabs": {
+      "overview": "概覽",
+      "edit": "編輯",
+      "posts": "貼文",
+      "followers": "粉絲",
+      "following": "關注中",
+      "bookmarks": "收藏"
+    },
+    "stats": {
+      "posts": "貼文",
+      "followers": "粉絲",
+      "following": "關注中",
+      "bookmarks": "收藏",
+      "collected": "已收藏",
+      "responses": "評論"
+    },
+    "collections": {
+      "title": "收藏集",
+      "images": "圖片",
+      "companies": "公司",
+      "portfoliosCount": "{{count}} 個作品集",
+      "noImages": "尚無收藏圖片",
+      "noCompanies": "尚無關注公司"
+    },
+    "edit": {
+      "button": "編輯資料",
+      "title": "編輯個人資料",
+      "avatar": "頭像",
+      "changeAvatar": "更換頭像",
+      "username": "使用者名稱",
+      "fullName": "全名",
+      "bio": "個人簡介",
+      "bioPlaceholder": "介紹一下你自己...",
+      "location": "位置",
+      "locationPlaceholder": "城市, 國家",
+      "website": "網站",
+      "company": "公司",
+      "save": "儲存變更",
+      "cancel": "取消",
+      "saving": "儲存中...",
+      "saved": "個人資料已更新！",
+      "errors": {
+        "usernameTooShort": "使用者名稱至少需要 3 個字元",
+        "usernameInvalid": "使用者名稱只能包含字母、數字和底線",
+        "bioTooLong": "個人簡介必須少於 500 個字元",
+        "avatarTooLarge": "頭像圖片必須小於 5MB"
+      }
+    },
+    "noPosts": "還沒有貼文",
+    "followersListSoon": "粉絲列表即將推出",
+    "followingListSoon": "關注列表即將推出"
+  },
+  "messages": {
+    "title": "私訊",
+    "directMessage": "私人訊息",
+    "noMessages": "還沒有訊息。開始對話吧！",
+    "typePlaceholder": "輸入訊息...",
+    "send": "發送"
+  },
+  "inspiration": {
+    "header": {
+      "label": "靈感流",
+      "light": "亮色模式",
+      "dark": "暗色模式"
+    },
+    "sidebar": {
+      "categories": "分類",
+      "active": "已選",
+      "locations": "地區",
+      "actions": "快速篩選",
+      "rating": "評分 4.5+",
+      "clear": "重設篩選"
+    },
+    "hero": {
+      "tagline": "精選空間",
+      "eyebrow": "精選空間",
+      "title": "探索頂級設計師的生活靈感",
+      "subtitle": "瀏覽由認證服務商提供的精選作品，並根據你的收藏即時推薦。",
+      "searchPlaceholder": "以標籤或氛圍搜尋（例：禪意、日落、大理石）",
+      "search": "搜尋"
+    },
+    "filters": {
+      "types": {
+        "sleeproom": "臥室",
+        "kitchen": "廚房"
+      },
+      "locations": {
+        "hk": "中國香港",
+        "uk": "英國"
+      },
+      "price": {
+        "any": "全部預算",
+        "mid": "5萬以下",
+        "high": "5萬-15萬",
+        "lux": "15萬以上"
+      }
+    },
+    "card": {
+      "collect": "收藏",
+      "collected": "已收藏",
+      "like": "按讚",
+      "liked": "已按讚",
+      "pinned": "置頂",
+      "featured": "精選",
+      "sponsored": "贊助",
+      "rating": "{{rating}} · {{count}} 則評價",
+      "follow": "追蹤",
+      "message": "私訊",
+      "collects": "{{count}} 次收藏",
+      "likes": "{{count}} 次讚",
+      "share": "分享"
+    },
+    "carousel": {
+      "close": "關閉",
+      "imageAlt": "作品預覽圖",
+      "previous": "上一張",
+      "next": "下一張",
+      "slide": "第 {{index}} 張"
+    },
+    "sort": {
+      "newest": "最新",
+      "popular": "最熱門",
+      "personalized": "為你推薦",
+      "total": "共 {{count}} 則靈感"
+    },
+    "search": {
+      "placeholder": "按標籤或氛圍搜索（如：禪意、日落、大理石）"
+    },
+    "actions": {
+      "lightMode": "亮色",
+      "darkMode": "暗色",
+      "clear": "清除",
+      "searchTags": "搜索"
+    },
+    "filter": {
+      "type": "空間類型",
+      "location": "所在地區",
+      "price": "預算範圍",
+      "rating": "評分",
+      "ratingValue": "≥ {{rating}}",
+      "active": "共展示 {{count}} 條靈感"
+    },
+    "type": {
+      "sleeproom": "臥室",
+      "kitchen": "廚房",
+      "living": "客廳",
+      "bathroom": "浴室"
+    },
+    "location": {
+      "hk": "中國香港",
+      "uk": "英國",
+      "sg": "新加坡"
+    },
+    "priceRange": {
+      "entry": "5萬以下",
+      "premium": "5萬 - 15萬",
+      "luxury": "15萬以上"
+    },
+    "loading": {
+      "more": "載入更多...",
+      "end": "你已看完所有內容！"
+    },
+    "empty": {
+      "title": "還沒有靈感項目",
+      "subtitle": "請稍後再試或調整篩選條件",
+      "reload": "重新載入"
+    },
+    "scrollHint": "向下捲動發現更多",
+    "share": {
+      "description": "一起來看看這則靈感：{{title}}"
+    }
+  },
+  "nav": {
+    "home": "首頁",
+    "browseProviders": "瀏覽服務商",
+    "categoriesMenu": "分類",
+    "profile": "個人資料",
+    "collections": "收藏集",
+    "demands": "我的需求",
+    "uploadPortfolio": "上傳作品集",
+    "analytics": "數據分析",
+    "messages": "訊息",
+    "manageCategories": "管理分類",
+    "approve": "審核內容",
+    "usersList": "用戶列表",
+    "settings": "設定",
+    "login": "登入",
+    "signup": "註冊",
+    "logout": "登出",
+    "searchPlaceholder": "搜索靈感...",
+    "categories": {
+      "sleeproom": "臥室",
+      "kitchen": "廚房",
+      "living": "客廳",
+      "bathroom": "浴室"
+    }
+  },
+  "error": {
+    "unknown": "發生未知錯誤",
+    "network": "網路連線錯誤，請檢查您的網路",
+    "timeout": "請求逾時，請稍後再試",
+    "unauthorized": "您沒有權限執行此操作",
+    "notFound": "找不到請求的資源",
+    "duplicate": "資料已存在",
+    "foreignKeyViolation": "資料關聯錯誤",
+    "notNullViolation": "必填欄位不能為空",
+    "tableNotFound": "資料表不存在",
+    "insufficientPrivilege": "權限不足",
+    "undefinedFunction": "功能未定義",
+    "invalidTextRepresentation": "資料格式錯誤",
+    "noContent": "沒有內容",
+    "fileTooLarge": "檔案太大，請上傳較小的檔案",
+    "invalidFileType": "不支援的檔案類型",
+    "storageQuotaExceeded": "儲存空間已滿",
+    "featureUnavailable": "功能暫時無法使用",
+    "somethingWrong": "發生錯誤",
+    "unexpectedError": "發生意外錯誤",
+    "reloadPage": "重新整理",
+    "accessDenied": "拒絕存取",
+    "noPermission": "您沒有權限存取此頁面",
+    "goBack": "返回",
+    "duplicateProfile": "帳號資料已存在"
+  },
+  "provider": {
+    "notFound": "找不到服務商",
+    "location": "香港中環",
+    "reviewsLabel": "評價",
+    "stats": {
+      "projects": "完成專案",
+      "experience": "經驗年資",
+      "team": "團隊人數",
+      "founded": "成立時間",
+      "years": "年",
+      "year": "年"
+    },
+    "edit": {
+      "button": "編輯資料",
+      "title": "編輯服務商資料",
+      "basicInfo": "基本資訊",
+      "pricing": "價格資訊",
+      "stats": "公司數據",
+      "socialLinks": "社群連結",
+      "adminControls": "管理員控制",
+      "logo": "公司 Logo",
+      "uploadLogo": "上傳 Logo",
+      "companyName": "公司名稱",
+      "bio": "簡介",
+      "priceMin": "最低價格",
+      "priceMax": "最高價格",
+      "currency": "貨幣",
+      "approvedStatus": "已審核通過",
+      "save": "儲存變更",
+      "cancel": "取消",
+      "saving": "儲存中...",
+      "success": "資料更新成功",
+      "error": "資料更新失敗",
+      "social": {
+        "phone": "電話",
+        "email": "電郵",
+        "website": "網站",
+        "facebook": "Facebook",
+        "instagram": "Instagram",
+        "youtube": "YouTube"
+      },
+      "errors": {
+        "companyNameRequired": "公司名稱為必填",
+        "priceMinInvalid": "最低價格必須為正數",
+        "priceMaxLessThanMin": "最高價格必須大於最低價格",
+        "teamSizeInvalid": "團隊人數必須為正數"
+      }
+    },
+    "services": {
+      "title": "服務項目",
+      "residential": "住宅設計",
+      "commercial": "商業空間設計",
+      "office": "辦公室設計",
+      "furniture": "軟裝陳設",
+      "renovation": "舊屋翻新",
+      "lighting": "燈光設計",
+      "subscription": "訂製傢俱"
+    },
+    "pricing": {
+      "title": "平均服務收費",
+      "design": "設計費用",
+      "construction": "工程費用",
+      "subscription": "訂價管理費用"
+    },
+    "contact": {
+      "title": "聯絡資訊"
+    },
+    "actions": {
+      "message": "聯絡顧問",
+      "book": "預約服務"
+    },
+    "ratings": {
+      "design": "設計品質",
+      "construction": "施工品質",
+      "service": "服務態度",
+      "communication": "溝通",
+      "timeline": "進度",
+      "value": "物有所值"
+    },
+    "reviews": {
+      "title": "實績評分",
+      "addedTo": "加入Homedia",
+      "year": "年",
+      "month": "月",
+      "verified": "驗證購買",
+      "showMore": "顯示全部247則評價"
+    },
+    "portfolio": {
+      "title": "作品集",
+      "sectionTitle": "作品集",
+      "viewAll": "查看全部",
+      "upload": {
+        "step1Title": "專案詳情",
+        "step2Title": "上傳圖片",
+        "title": "專案標題",
+        "address": "地址",
+        "areaSqft": "面積 (平方呎)",
+        "totalCost": "總費用",
+        "description": "描述",
+        "next": "下一步",
+        "dropFiles": "拖放檔案或點擊上傳",
+        "maxFiles": "最多 {{count}} 個檔案，每個 5MB",
+        "maxFilesError": "最多只能上傳 30 個檔案",
+        "selectCover": "選擇封面圖片",
+        "cover": "封面",
+        "upload": "上傳",
+        "success": "作品集已上傳！",
+        "pendingApproval": "您的作品集正在等待管理員審核",
+        "viewPortfolios": "查看我的作品集"
+      },
+      "list": {
+        "title": "作品集",
+        "sortNewest": "最新",
+        "sortPopular": "最熱門",
+        "noMore": "沒有更多作品集",
+        "empty": "尚無作品集"
+      },
+      "analytics": {
+        "impressions": "總瀏覽量",
+        "collects": "總收藏數",
+        "engagement": "互動率",
+        "impressionsChart": "瀏覽量（最近 30 天）",
+        "collectsChart": "收藏數（最近 30 天）"
+      }
+    }
+  }
+}

@@ -1,0 +1,5 @@
+dist
+.eslintrc.cjs
+e2e/
+playwright.config.ts
+vitest.config.ts
