@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registration Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .log { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .error { background: #ffebee; color: #c62828; }
+        .success { background: #e8f5e9; color: #2e7d32; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Supabase Registration Test</h1>
+    
+    <div>
+        <button onclick="testUsernameCheck()">Test 1: Check Username Available</button>
+        <button onclick="testSupabaseAuth()">Test 2: Supabase Auth SignUp</button>
+        <button onclick="testInsertUser()">Test 3: Insert to app_users</button>
+        <button onclick="testUserProfileView()">Test 4: Query user_profiles</button>
+        <button onclick="testFullRegistration()">Test 5: Full Registration Flow</button>
+    </div>
+    
+    <div id="logs"></div>
+
+    <script>
+        const SUPABASE_URL = 'https://jufwllhkgtvovyazgxld.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp1ZndsbGhrZ3R2b3Z5YXpneGxkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk2MDU4NTYsImV4cCI6MjA3NTE4MTg1Nn0.Qr5U__VbJg6PUwpNyPaQUFlut8IvURLW19_DOoXAx9M';
+        
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        function log(message, type = 'log') {
+            const div = document.createElement('div');
+            div.className = `log ${type}`;
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            document.getElementById('logs').appendChild(div);
+            console.log(message);
+        }
+
+        async function testUsernameCheck() {
+            log('Testing username availability check...', 'log');
+            const testUsername = 'testuser' + Date.now();
+            
+            try {
+                const { data, error } = await supabaseClient.rpc('is_username_available', { 
+                    check_username: testUsername 
+                });
+                
+                if (error) {
+                    log(`❌ Username check failed: ${error.message}`, 'error');
+                    log(`Error details: ${JSON.stringify(error)}`, 'error');
+                } else {
+                    log(`✅ Username check passed. Available: ${data}`, 'success');
+                }
+            } catch (err) {
+                log(`❌ Exception: ${err.message}`, 'error');
+            }
+        }
+
+        async function testSupabaseAuth() {
+            log('Testing Supabase Auth signup...', 'log');
+            const testEmail = 'test' + Date.now() + '@example.com';
+            const testUsername = 'testuser' + Date.now();
+            
+            try {
+                const { data, error } = await supabaseClient.auth.signUp({
+                    email: testEmail,
+                    password: 'TestPassword123!',
+                    options: {
+                        data: {
+                            username: testUsername,
+                        },
+                    },
+                });
+                
+                if (error) {
+                    log(`❌ Auth signup failed: ${error.message}`, 'error');
+                } else if (!data.user) {
+                    log(`❌ No user created`, 'error');
+                } else {
+                    log(`✅ Auth signup successful. User ID: ${data.user.id}`, 'success');
+                    log(`Session: ${data.session ? 'Created' : 'Not created (email confirmation needed)'}`, 'log');
+                    
+                    // Cleanup
+                    if (data.session) {
+                        await supabaseClient.auth.signOut();
+                    }
+                }
+            } catch (err) {
+                log(`❌ Exception: ${err.message}`, 'error');
+            }
+        }
+
+        async function testInsertUser() {
+            log('Testing direct insert to app_users...', 'log');
+            
+            // Note: This will likely fail due to RLS, but shows if the structure is correct
+            const testId = '00000000-0000-0000-0000-' + Date.now().toString().padStart(12, '0');
+            const testUsername = 'directtest' + Date.now();
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from('app_users')
+                    .insert({
+                        id: testId,
+                        username: testUsername,
+                        email: 'direct' + Date.now() + '@test.com',
+                        role: 'homeowner',
+                    })
+                    .select();
+                
+                if (error) {
+                    log(`⚠️ Direct insert failed (expected due to RLS): ${error.message}`, 'log');
+                    log(`Error code: ${error.code}`, 'log');
+                } else {
+                    log(`✅ Insert successful: ${JSON.stringify(data)}`, 'success');
+                }
+            } catch (err) {
+                log(`❌ Exception: ${err.message}`, 'error');
+            }
+        }
+
+        async function testUserProfileView() {
+            log('Testing user_profiles view query...', 'log');
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from('user_profiles')
+                    .select('*')
+                    .limit(1);
+                
+                if (error) {
+                    log(`❌ View query failed: ${error.message}`, 'error');
+                    log(`Error details: ${JSON.stringify(error)}`, 'error');
+                } else {
+                    log(`✅ View query successful. Found ${data.length} records`, 'success');
+                    if (data.length > 0) {
+                        log(`Sample record fields: ${Object.keys(data[0]).join(', ')}`, 'log');
+                    }
+                }
+            } catch (err) {
+                log(`❌ Exception: ${err.message}`, 'error');
+            }
+        }
+
+        async function testFullRegistration() {
+            log('=== Starting Full Registration Test ===', 'log');
+            const timestamp = Date.now();
+            const testEmail = `fulltest${timestamp}@example.com`;
+            const testUsername = `fulltest${timestamp}`;
+            const testPassword = 'TestPassword123!';
+            
+            try {
+                // Step 1: Check username
+                log('Step 1: Checking username availability...', 'log');
+                const { data: isAvailable, error: checkError } = await supabaseClient
+                    .rpc('is_username_available', { check_username: testUsername });
+                
+                if (checkError) {
+                    log(`❌ Step 1 failed: ${checkError.message}`, 'error');
+                    return;
+                }
+                
+                if (!isAvailable) {
+                    log(`❌ Username already taken`, 'error');
+                    return;
+                }
+                log(`✅ Step 1 passed: Username available`, 'success');
+                
+                // Step 2: Sign up with Supabase Auth
+                log('Step 2: Signing up with Supabase Auth...', 'log');
+                const { data: authData, error: signUpError } = await supabaseClient.auth.signUp({
+                    email: testEmail,
+                    password: testPassword,
+                    options: {
+                        data: {
+                            username: testUsername,
+                        },
+                    },
+                });
+                
+                if (signUpError) {
+                    log(`❌ Step 2 failed: ${signUpError.message}`, 'error');
+                    return;
+                }
+                
+                if (!authData.user) {
+                    log(`❌ Step 2 failed: No user created`, 'error');
+                    return;
+                }
+                log(`✅ Step 2 passed: Auth user created. ID: ${authData.user.id}`, 'success');
+                
+                // Step 3: Insert into app_users
+                log('Step 3: Inserting into app_users...', 'log');
+                const { error: insertError } = await supabaseClient
+                    .from('app_users')
+                    .upsert({
+                        id: authData.user.id,
+                        username: testUsername,
+                        email: testEmail,
+                        role: 'homeowner',
+                        full_name: 'Test User',
+                        phone: '12345678',
+                    }, { onConflict: 'id', ignoreDuplicates: false });
+                
+                if (insertError) {
+                    log(`❌ Step 3 failed: ${insertError.message}`, 'error');
+                    log(`Error code: ${insertError.code}, Details: ${insertError.details}`, 'error');
+                    return;
+                }
+                log(`✅ Step 3 passed: User inserted into app_users`, 'success');
+                
+                // Step 4: Fetch user profile
+                log('Step 4: Fetching user profile...', 'log');
+                const { data: profileData, error: profileError } = await supabaseClient
+                    .from('user_profiles')
+                    .select('*')
+                    .eq('id', authData.user.id)
+                    .maybeSingle();
+                
+                if (profileError) {
+                    log(`❌ Step 4 failed: ${profileError.message}`, 'error');
+                    return;
+                }
+                
+                if (!profileData || !profileData.id) {
+                    log(`❌ Step 4 failed: No profile data found`, 'error');
+                    return;
+                }
+                log(`✅ Step 4 passed: Profile fetched successfully`, 'success');
+                log(`Profile: ${JSON.stringify(profileData, null, 2)}`, 'success');
+                
+                // Cleanup
+                log('Cleaning up: Signing out...', 'log');
+                await supabaseClient.auth.signOut();
+                log('=== Full Registration Test Complete ===', 'success');
+                
+            } catch (err) {
+                log(`❌ Exception during full test: ${err.message}`, 'error');
+                log(`Stack: ${err.stack}`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

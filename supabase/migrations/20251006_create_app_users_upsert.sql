@@ -2,6 +2,8 @@
 create or replace function public.handle_app_user_upsert()
 returns trigger
 language plpgsql
+security definer
+set search_path = public
 as $$
 declare
   payload jsonb;
@@ -36,6 +38,8 @@ exception when unique_violation then
   return new;
 end;
 $$;
+
+alter function public.handle_app_user_upsert() owner to postgres;
 
 drop trigger if exists on_auth_user_created on auth.users;
 

@@ -101,6 +101,11 @@
       "emailExists": "Email already exists",
       "networkError": "Network error, please try again later",
       "unknownError": "An unknown error occurred"
+    },
+    "accessDenied": {
+      "title": "Access Denied",
+      "message": "You don't have permission to access this page.",
+      "goBack": "Go Back"
     }
   },
   "forum": {
@@ -459,29 +464,25 @@
     }
   },
   "nav": {
-    "home": "Home",
-    "browseProviders": "Browse Providers",
-    "categoriesMenu": "Categories",
+    "inspiration": "Inspiration",
+    "browse": "Browse",
+    "forum": "Forum",
     "profile": "Profile",
     "collections": "Collections",
     "demands": "My Demands",
-    "uploadPortfolio": "Upload Portfolio",
+    "upload": "Upload",
     "analytics": "Analytics",
     "messages": "Messages",
-    "manageCategories": "Manage Categories",
-    "approve": "Approve Content",
-    "usersList": "Users List",
+    "manage": "Manage",
     "settings": "Settings",
     "login": "Login",
-    "signup": "Sign Up",
     "logout": "Logout",
-    "searchPlaceholder": "Search inspiration...",
-    "categories": {
-      "sleeproom": "Bedroom",
-      "kitchen": "Kitchen",
-      "living": "Living Room",
-      "bathroom": "Bathroom"
-    }
+    "search": "Search inspiration..."
+  },
+  "providers": {
+    "title": "Browse Providers",
+    "viewProfile": "View Profile",
+    "noResults": "No providers found"
   },
   "error": {
     "unknown": "An unexpected error occurred",

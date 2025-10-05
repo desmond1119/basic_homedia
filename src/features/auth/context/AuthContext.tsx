@@ -18,7 +18,7 @@ export interface AuthContextValue {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<AuthUser>;
   logout: () => Promise<void>;
 }
 
@@ -67,14 +67,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     };
   }, [dispatch]);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<AuthUser> => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
-    if (data.user) {
-      const authUser = fromSupabaseUser(data.user);
-      setUser(authUser);
-      dispatch(setAuthUser(authUser));
-    }
+    if (!data.user) throw new Error('No user data returned');
+    
+    const authUser = fromSupabaseUser(data.user);
+    setUser(authUser);
+    dispatch(setAuthUser(authUser));
+    return authUser;
   };
 
   const logout = async () => {
@@ -106,10 +107,16 @@ export const useAuth = () => {
   return context;
 };
 
-const fromSupabaseUser = (user: import('@supabase/supabase-js').User): AuthUser => ({
-  id: user.id,
-  email: user.email ?? null,
-  username: user.user_metadata?.username ?? null,
-  role: (user.user_metadata?.role as AppRole | undefined) ?? 'guest',
-  avatarUrl: user.user_metadata?.avatar_url ?? null,
-});
+const fromSupabaseUser = (user: import('@supabase/supabase-js').User): AuthUser => {
+  // Extract from metadata or generate defaults
+  const emailPrefix = user.email?.split('@')[0] || '';
+  const defaultUsername = emailPrefix || `user_${user.id.substring(0, 8)}`;
+  
+  return {
+    id: user.id,
+    email: user.email ?? null,
+    username: user.user_metadata?.username ?? defaultUsername,
+    role: (user.user_metadata?.role as AppRole | undefined) ?? 'homeowner',
+    avatarUrl: user.user_metadata?.avatar_url ?? user.user_metadata?.avatarUrl ?? null,
+  };
+};

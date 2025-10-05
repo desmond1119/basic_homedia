@@ -16,19 +16,20 @@
 
 @layer components {
   .pin-card {
-    @apply bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden;
+    @apply bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden border border-gray-100 hover:border-gray-200;
+    break-inside: avoid;
   }
   
   .pin-card:hover {
-    @apply transform scale-[1.02];
+    @apply -translate-y-1 scale-[1.02];
   }
   
   .pin-image {
-    @apply w-full object-cover rounded-t-2xl;
+    @apply w-full object-cover aspect-auto;
   }
   
   .pin-overlay {
-    @apply absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300;
+    @apply absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 hover:opacity-100 transition-all duration-300;
   }
   
   .pin-content {
@@ -36,31 +37,85 @@
   }
   
   .pin-title {
-    @apply font-semibold text-gray-900 line-clamp-2;
+    @apply font-semibold text-gray-900 text-sm leading-tight;
   }
   
   .pin-description {
-    @apply text-sm text-gray-600 line-clamp-3;
+    @apply text-xs text-gray-600 leading-relaxed;
+  }
+  
+  .pin-tags {
+    @apply flex flex-wrap gap-1 mt-2;
+  }
+  
+  .pin-tag {
+    @apply px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full;
+  }
+  
+  .pin-grid {
+    columns: 1;
+    column-gap: 1rem;
+  }
+  
+  @media (min-width: 640px) {
+    .pin-grid {
+      columns: 2;
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .pin-grid {
+      columns: 3;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .pin-grid {
+      columns: 4;
+    }
+  }
+  
+  @media (min-width: 1280px) {
+    .pin-grid {
+      columns: 5;
+    }
   }
   
   .btn-primary {
-    @apply bg-red-500 hover:bg-red-600 text-white font-medium px-6 py-3 rounded-full transition-colors duration-200;
+    @apply bg-primary-500 hover:bg-primary-600 text-white font-medium px-6 py-3 rounded-full transition-all duration-200 shadow-sm hover:shadow-md;
   }
   
   .btn-secondary {
-    @apply bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium px-6 py-3 rounded-full transition-colors duration-200;
+    @apply bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium px-6 py-3 rounded-full transition-all duration-200;
+  }
+  
+  .btn-accent {
+    @apply bg-accent-pink hover:bg-pink-600 text-white font-medium px-4 py-2 rounded-full transition-all duration-200 text-sm;
   }
   
   .search-bar {
-    @apply w-full bg-gray-100 border-0 rounded-full px-6 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:bg-white;
+    @apply w-full bg-gray-50 border border-gray-200 rounded-full px-6 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white focus:border-primary-300 transition-all duration-200;
   }
   
   .nav-item {
-    @apply flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200;
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-all duration-200;
   }
   
   .nav-item.active {
-    @apply bg-red-50 text-red-600 font-medium;
+    @apply bg-primary-50 text-primary-600 font-medium;
+  }
+  
+  .ripple-effect {
+    @apply relative overflow-hidden;
+  }
+  
+  .ripple-effect::before {
+    content: '';
+    @apply absolute inset-0 bg-white opacity-0 rounded-full scale-0 transition-all duration-300;
+  }
+  
+  .ripple-effect:active::before {
+    @apply opacity-20 scale-100;
   }
 }
 

@@ -8,21 +8,84 @@ export class ProfileRepository {
   // Fetch user profile with stats
   async getProfile(userId: string): Promise<Result<UserProfile | null, Error>> {
     try {
-      const { data, error } = await supabase.rpc('get_user_profile_with_stats', {
+      // Check if user is authenticated
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        console.error('No active session');
+        return Result.fail(new Error('Not authenticated'));
+      }
+
+      console.log('Fetching profile for user:', userId);
+      console.log('Current session user:', session.user.id);
+
+      // Try RPC function first
+      const { data: rpcData, error: rpcError } = await supabase.rpc('get_user_profile_with_stats', {
         user_uuid: userId,
       });
 
-      if (error) {
-        return Result.fail(new Error(error.message));
+      if (!rpcError && rpcData && rpcData.length > 0) {
+        const profile = ProfileMapper.toUserProfile(rpcData[0]);
+        return Result.ok(profile);
       }
 
-      if (!data || data.length === 0) {
+      // Fallback: Query app_users table directly (more reliable than view)
+      console.warn('RPC function failed, using direct app_users query');
+      
+      const { data: userData, error: userError } = await supabase
+        .from('app_users')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle();
+
+      if (userError) {
+        console.error('Failed to fetch from app_users:', userError);
+        console.error('Error code:', userError.code);
+        console.error('Error details:', userError.details);
+        console.error('Error hint:', userError.hint);
+        
+        // If RLS error, provide helpful message
+        if (userError.code === 'PGRST301' || userError.message.includes('row-level security')) {
+          return Result.fail(new Error('Database permission error. Please ensure RLS policies are correctly set up.'));
+        }
+        
+        return Result.fail(new Error(userError.message));
+      }
+
+      if (!userData) {
+        console.warn('No user found with id:', userId);
         return Result.ok(null);
       }
 
-      const profile = ProfileMapper.toUserProfile(data[0]);
+      console.log('User data fetched successfully:', userData.username);
+
+      // Build profile data with all required fields (stats default to 0)
+      const profileData = {
+        id: userData.id,
+        username: userData.username,
+        email: userData.email,
+        full_name: userData.full_name || null,
+        avatar_url: userData.avatar_url || null,
+        bio: userData.bio || null,
+        location: null as string | null,
+        website: null as string | null,
+        company_name: userData.company_name || null,
+        role: userData.role,
+        provider_type_id: userData.provider_type_id || null,
+        is_active: userData.is_active ?? true,
+        created_at: userData.created_at || new Date().toISOString(),
+        updated_at: userData.updated_at || userData.created_at || new Date().toISOString(),
+        follower_count: 0,
+        following_count: 0,
+        post_count: 0,
+        bookmark_count: 0,
+      };
+
+      console.log('Profile data assembled:', profileData.username);
+
+      const profile = ProfileMapper.toUserProfile(profileData);
       return Result.ok(profile);
     } catch (error) {
+      console.error('Unexpected error in getProfile:', error);
       return Result.fail(error instanceof Error ? error : new Error('Unknown error'));
     }
   }

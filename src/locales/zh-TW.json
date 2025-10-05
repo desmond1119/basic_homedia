@@ -61,6 +61,8 @@
       "creating": "建立帳戶中...",
       "hasAccount": "已經有帳戶？",
       "login": "登入",
+      "success": "註冊成功！正在跳轉...",
+      "error": "註冊失敗，請重試",
       "errors": {
         "usernameLength": "使用者名稱至少需要 3 個字元",
         "usernameFormat": "使用者名稱只能包含字母、數字和底線",
@@ -96,6 +98,11 @@
       "emailExists": "電子郵件已存在",
       "networkError": "網路錯誤，請稍後再試",
       "unknownError": "發生未知錯誤"
+    },
+    "accessDenied": {
+      "title": "拒絕存取",
+      "message": "您沒有權限存取此頁面。",
+      "goBack": "返回"
     }
   },
   "forum": {
@@ -163,8 +170,10 @@
     "isFollowing": "關注中",
     "message": "訊息",
     "notFound": "找不到使用者",
+    "notFoundDesc": "此用戶個人檔案不存在",
     "backToForum": "返回論壇",
     "about": "關於",
+    "noInfo": "暫無其他資訊",
     "noFollowers": "還沒有粉絲",
     "noFollowing": "還沒有關注任何人",
     "noBookmarks": "還沒有收藏",
@@ -341,29 +350,25 @@
     }
   },
   "nav": {
-    "home": "首頁",
-    "browseProviders": "瀏覽服務商",
-    "categoriesMenu": "分類",
-    "profile": "個人資料",
+    "inspiration": "靈感",
+    "browse": "瀏覽",
+    "forum": "社群",
+    "profile": "個人檔案",
     "collections": "收藏集",
     "demands": "我的需求",
-    "uploadPortfolio": "上傳作品集",
+    "upload": "上傳作品",
     "analytics": "數據分析",
     "messages": "訊息",
-    "manageCategories": "管理分類",
-    "approve": "審核內容",
-    "usersList": "用戶列表",
+    "manage": "管理",
     "settings": "設定",
     "login": "登入",
-    "signup": "註冊",
     "logout": "登出",
-    "searchPlaceholder": "搜索靈感...",
-    "categories": {
-      "sleeproom": "臥室",
-      "kitchen": "廚房",
-      "living": "客廳",
-      "bathroom": "浴室"
-    }
+    "search": "搜索靈感..."
+  },
+  "providers": {
+    "title": "瀏覽服務商",
+    "viewProfile": "查看檔案",
+    "noResults": "找不到服務商"
   },
   "error": {
     "unknown": "發生未知錯誤",
@@ -516,5 +521,198 @@
         "collectsChart": "收藏數（最近 30 天）"
       }
     }
+  },
+  "admin": {
+    "title": "管理後台",
+    "tabs": {
+      "home": "首頁",
+      "categories": "分類管理",
+      "providerTypes": "服務商類型",
+      "approvals": "審核管理",
+      "analytics": "分析與設定"
+    },
+    "stats": {
+      "totalUsers": "總用戶數",
+      "totalProviders": "服務商數",
+      "totalHomeowners": "房主數",
+      "totalPosts": "總貼文數",
+      "totalReviews": "總評論數",
+      "pendingPortfolios": "待審核作品集",
+      "newUsersWeek": "本週新用戶",
+      "newUsersMonth": "本月新用戶"
+    },
+    "growth": {
+      "title": "成長趨勢",
+      "thisWeek": "本週",
+      "thisMonth": "本月"
+    },
+    "quickActions": {
+      "title": "快速操作",
+      "reviewPending": "審核待處理項目",
+      "manageCategories": "管理分類"
+    },
+    "categories": {
+      "title": "分類管理",
+      "add": "新增分類",
+      "edit": "編輯分類",
+      "create": "建立分類",
+      "name": "名稱",
+      "description": "描述",
+      "icon": "圖示",
+      "featured": "精選",
+      "deleteConfirm": "確定要刪除此分類嗎？"
+    },
+    "providerTypes": {
+      "title": "服務商類型管理",
+      "add": "新增類型",
+      "edit": "編輯類型",
+      "create": "建立類型",
+      "typeName": "類型名稱",
+      "displayName": "顯示名稱",
+      "description": "描述",
+      "active": "啟用",
+      "deleteConfirm": "確定要刪除此類型嗎？"
+    },
+    "approvals": {
+      "users": "用戶管理",
+      "portfolios": "作品集審核",
+      "search": "搜尋用戶...",
+      "allRoles": "所有角色",
+      "homeowners": "房主",
+      "providers": "服務商",
+      "admins": "管理員",
+      "pending": "待審核",
+      "approve": "通過",
+      "reject": "拒絕",
+      "setAdmin": "設為管理員",
+      "confirmAdmin": "確定要將此用戶設為管理員嗎？",
+      "confirmReject": "確定要拒絕嗎？",
+      "by": "由",
+      "noPending": "沒有待審核項目"
+    },
+    "settings": {
+      "title": "全域設定",
+      "siteName": "網站名稱",
+      "darkMode": "深色模式"
+    },
+    "export": {
+      "title": "資料匯出",
+      "description": "匯出管理資料為 CSV 格式",
+      "exportCSV": "匯出 CSV"
+    },
+    "save": "儲存",
+    "saving": "儲存中...",
+    "cancel": "取消",
+    "active": "啟用",
+    "inactive": "未啟用"
+  },
+  "inspiration": {
+    "hero": {
+      "title": "發現設計靈感",
+      "subtitle": "探索數千個室內設計作品，找到您的完美風格"
+    },
+    "search": {
+      "placeholder": "搜尋設計靈感..."
+    },
+    "filters": {
+      "title": "篩選",
+      "category": "分類",
+      "allCategories": "所有分類",
+      "priceRange": "價格範圍",
+      "anyPrice": "任何價格",
+      "sortBy": "排序方式"
+    },
+    "stats": {
+      "trending": "熱門趨勢",
+      "views": "總瀏覽量",
+      "creators": "創作者",
+      "likes": "總讚數"
+    },
+    "type": {
+      "sleeproom": "臥室",
+      "kitchen": "廚房",
+      "living": "客廳",
+      "bathroom": "浴室"
+    },
+    "priceRange": {
+      "entry": "入門級",
+      "premium": "高級",
+      "luxury": "奢華"
+    },
+    "sort": {
+      "trending": "熱門",
+      "newest": "最新",
+      "popular": "最受歡迎"
+    },
+    "loadMore": "載入更多",
+    "share": {
+      "title": "分享設計靈感"
+    },
+    "empty": {
+      "title": "暫無內容",
+      "subtitle": "目前沒有找到相關的設計靈感",
+      "reload": "重新載入"
+    },
+    "loading": {
+      "end": "已載入全部內容"
+    }
+  },
+  "settings": {
+    "title": "設定",
+    "subtitle": "管理您的帳戶設定與偏好",
+    "tabs": {
+      "profile": "個人資料",
+      "notifications": "通知",
+      "privacy": "隱私",
+      "language": "語言",
+      "appearance": "外觀"
+    },
+    "profile": {
+      "title": "個人資料",
+      "subtitle": "更新您的個人資訊",
+      "changeAvatar": "變更頭像",
+      "username": "使用者名稱",
+      "email": "電子郵件",
+      "emailNote": "電子郵件無法變更",
+      "fullName": "全名",
+      "fullNamePlaceholder": "請輸入您的全名",
+      "bio": "個人簡介",
+      "bioPlaceholder": "介紹一下您自己..."
+    },
+    "notifications": {
+      "title": "通知設定",
+      "subtitle": "管理您的通知偏好",
+      "emailNotifications": "電子郵件通知",
+      "emailNotificationsDesc": "接收重要更新的電子郵件",
+      "pushNotifications": "推送通知",
+      "pushNotificationsDesc": "接收即時推送通知",
+      "newFollowers": "新追蹤者",
+      "newFollowersDesc": "當有人追蹤您時通知",
+      "newLikes": "新讚",
+      "newLikesDesc": "當有人讚您的內容時通知",
+      "newComments": "新留言",
+      "newCommentsDesc": "當有人留言時通知",
+      "newsletter": "電子報",
+      "newsletterDesc": "接收每週電子報"
+    },
+    "privacy": {
+      "title": "隱私設定",
+      "subtitle": "管理您的隱私偏好"
+    },
+    "language": {
+      "title": "語言設定",
+      "subtitle": "選擇您偏好的語言"
+    },
+    "appearance": {
+      "title": "外觀設定",
+      "subtitle": "自訂您的介面外觀",
+      "light": "淺色",
+      "dark": "深色",
+      "auto": "自動"
+    }
+  },
+  "nav": {
+    "profile": "個人檔案",
+    "settings": "設定"
   }
 }

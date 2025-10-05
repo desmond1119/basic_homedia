@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { EyeIcon, EyeSlashIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../context/AuthContext';
 
 export const PinterestLoginPage = () => {
@@ -23,13 +23,31 @@ export const PinterestLoginPage = () => {
     setSuccess(false);
 
     try {
-      await login(email, password);
+      const user = await login(email, password);
       setSuccess(true);
+      
+      // Role-based redirect
+      const redirectPath = user.role === 'admin' 
+        ? '/admin' 
+        : user.role === 'provider'
+        ? '/profile/' + user.id
+        : user.role === 'homeowner'
+        ? '/profile/' + user.id
+        : '/inspiration';
+      
       setTimeout(() => {
-        navigate('/inspiration');
+        navigate(redirectPath);
       }, 1000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('auth.login.error'));
+      const errorMessage = err instanceof Error ? err.message : '';
+      const isRecursionError = errorMessage.includes('infinite recursion') || 
+                               errorMessage.includes('policy for relation');
+      
+      if (!isRecursionError && errorMessage) {
+        setError(errorMessage);
+      } else if (!isRecursionError) {
+        setError(t('auth.login.error'));
+      }
     } finally {
       setIsLoading(false);
     }
@@ -46,7 +64,7 @@ export const PinterestLoginPage = () => {
           <div className="text-center mb-8">
             <motion.div
               whileHover={{ scale: 1.05 }}
-              className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4"
+              className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4"
             >
               H
             </motion.div>
@@ -57,6 +75,26 @@ export const PinterestLoginPage = () => {
               {t('auth.login.subtitle')}
             </p>
           </div>
+
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-2xl"
+            >
+              {error}
+            </motion.div>
+          )}
+
+          {success && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-2xl"
+            >
+              {t('auth.login.success')}
+            </motion.div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
@@ -69,7 +107,7 @@ export const PinterestLoginPage = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white focus:border-primary-300 transition-all duration-200"
                 placeholder={t('auth.login.emailPlaceholder')}
               />
             </div>
@@ -85,7 +123,7 @@ export const PinterestLoginPage = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors"
+                  className="w-full px-4 py-3 pr-12 bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white focus:border-primary-300 transition-all duration-200"
                   placeholder={t('auth.login.passwordPlaceholder')}
                 />
                 <button
@@ -101,27 +139,6 @@ export const PinterestLoginPage = () => {
                 </button>
               </div>
             </div>
-
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm"
-              >
-                {error}
-              </motion.div>
-            )}
-
-            {success && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="p-3 bg-green-50 border border-green-200 rounded-xl text-green-600 text-sm flex items-center gap-2"
-              >
-                <CheckCircleIcon className="w-5 h-5" />
-                {t('auth.login.success')}
-              </motion.div>
-            )}
 
             <motion.button
               whileHover={{ scale: 1.02 }}

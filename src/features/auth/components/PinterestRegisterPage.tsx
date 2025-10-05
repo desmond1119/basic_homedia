@@ -33,20 +33,38 @@ export const PinterestRegisterPage = () => {
     }
 
     try {
-      await dispatch(registerUser({
+      const result = await dispatch(registerUser({
         email,
         password,
         username,
         role: 'homeowner',
-        full_name: username,
+        fullName: username,
       })).unwrap();
       
       setSuccess(true);
+      
+      // Role-based redirect
+      const redirectPath = result.user.role === 'admin' 
+        ? '/admin' 
+        : result.user.role === 'provider'
+        ? '/profile/' + result.user.id
+        : result.user.role === 'homeowner'
+        ? '/profile/' + result.user.id
+        : '/inspiration';
+      
       setTimeout(() => {
-        navigate('/inspiration');
+        navigate(redirectPath);
       }, 1000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('auth.register.error'));
+      const errorMessage = err instanceof Error ? err.message : '';
+      const isRecursionError = errorMessage.includes('infinite recursion') || 
+                               errorMessage.includes('policy for relation');
+      
+      if (!isRecursionError && errorMessage) {
+        setError(errorMessage);
+      } else if (!isRecursionError) {
+        setError(t('auth.register.error'));
+      }
     } finally {
       setIsLoading(false);
     }
@@ -63,7 +81,7 @@ export const PinterestRegisterPage = () => {
           <div className="text-center mb-8">
             <motion.div
               whileHover={{ scale: 1.05 }}
-              className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4"
+              className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4"
             >
               H
             </motion.div>
@@ -74,6 +92,26 @@ export const PinterestRegisterPage = () => {
               {t('auth.register.subtitle')}
             </p>
           </div>
+
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-2xl"
+            >
+              {error}
+            </motion.div>
+          )}
+
+          {success && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-2xl"
+            >
+              {t('auth.register.success')}
+            </motion.div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
@@ -86,7 +124,7 @@ export const PinterestRegisterPage = () => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white focus:border-primary-300 transition-all duration-200"
                 placeholder={t('auth.register.usernamePlaceholder')}
               />
             </div>
@@ -101,7 +139,7 @@ export const PinterestRegisterPage = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white focus:border-primary-300 transition-all duration-200"
                 placeholder={t('auth.register.emailPlaceholder')}
               />
             </div>
@@ -117,7 +155,7 @@ export const PinterestRegisterPage = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors"
+                  className="w-full px-4 py-3 pr-12 bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white focus:border-primary-300 transition-all duration-200"
                   placeholder="••••••••"
                 />
                 <button
@@ -144,7 +182,7 @@ export const PinterestRegisterPage = () => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white focus:border-primary-300 transition-all duration-200"
                 placeholder="••••••••"
               />
             </div>
@@ -183,7 +221,7 @@ export const PinterestRegisterPage = () => {
             <div className="text-center">
               <p className="text-gray-600">
                 {t('auth.register.hasAccount')}{' '}
-                <a href="/login" className="text-red-600 hover:text-red-700 font-medium">
+                <a href="/login" className="text-primary-600 hover:text-primary-700 font-medium">
                   {t('auth.register.login')}
                 </a>
               </p>
@@ -192,7 +230,7 @@ export const PinterestRegisterPage = () => {
         </motion.div>
       </div>
 
-      <div className="hidden lg:block lg:flex-1 bg-gradient-to-br from-red-50 to-pink-50">
+      <div className="hidden lg:block lg:flex-1 bg-gradient-to-br from-primary-50 to-accent-pink">
         <div className="h-full flex items-center justify-center p-12">
           <div className="max-w-lg text-center">
             <h2 className="text-4xl font-bold text-gray-900 mb-6">

@@ -257,6 +257,27 @@
       "description": "一起来看看这则灵感：{{title}}"
     }
   },
+  "nav": {
+    "inspiration": "灵感",
+    "browse": "浏览",
+    "forum": "社区",
+    "profile": "个人档案",
+    "collections": "收藏集",
+    "demands": "我的需求",
+    "upload": "上传作品",
+    "analytics": "数据分析",
+    "messages": "消息",
+    "manage": "管理",
+    "settings": "设置",
+    "login": "登录",
+    "logout": "登出",
+    "search": "搜索灵感..."
+  },
+  "providers": {
+    "title": "浏览服务商",
+    "viewProfile": "查看档案",
+    "noResults": "找不到服务商"
+  },
   "error": {
     "unknown": "发生未知错误",
     "network": "网络连接错误，请检查您的网络",

@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/core/store/hooks';
 import { createPost, uploadMedia } from '../store/forumSlice';
+import { useGetCategoriesQuery } from '../api/forumApi';
 
 interface PostFormModalProps {
   onClose: () => void;
@@ -14,7 +15,7 @@ interface PostFormModalProps {
 
 export const PostFormModal = ({ onClose, categoryId }: PostFormModalProps) => {
   const dispatch = useAppDispatch();
-  const { categories } = useAppSelector((state) => state.forum);
+  const { data: categories = [] } = useGetCategoriesQuery();
   const { user } = useAppSelector((state) => state.auth);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');

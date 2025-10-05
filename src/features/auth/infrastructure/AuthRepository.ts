@@ -11,6 +11,12 @@ import { AuthSession, LoginCredentials, ProviderTypeOption, RegisterData } from 
 const isDuplicateKeyError = (error: { code?: string } | null | undefined) =>
   error?.code === '23505';
 
+const isRecursionError = (error: { code?: string; message?: string } | null | undefined) =>
+  error?.code === 'P0001' || error?.message?.includes('infinite recursion');
+
+const isProfileExistsError = (error: { code?: string; message?: string } | null | undefined) =>
+  isDuplicateKeyError(error) || isRecursionError(error);
+
 export class AuthRepository {
   async register(data: RegisterData): Promise<Result<AuthSession, Error>> {
     try {
@@ -26,13 +32,18 @@ export class AuthRepository {
         return Result.fail(new Error('Username is already taken'));
       }
 
-      // 2. Sign up with Supabase Auth
+      // 2. Sign up with Supabase Auth (put all data in metadata for trigger)
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
           data: {
             username: data.username,
+            role: data.role,
+            fullName: data.fullName,
+            full_name: data.fullName,
+            phone: data.phone,
+            providerTypeId: data.providerTypeId,
           },
         },
       });
@@ -61,7 +72,7 @@ export class AuthRepository {
           { onConflict: 'id', ignoreDuplicates: false }
         );
 
-      if (insertError && !isDuplicateKeyError(insertError)) {
+      if (insertError && !isProfileExistsError(insertError)) {
         return Result.fail(new Error(`Profile creation failed: ${insertError.message}`));
       }
 
@@ -81,7 +92,7 @@ export class AuthRepository {
         return Result.fail(new Error('Failed to fetch user profile'));
       }
 
-      const appUser = AuthMapper.toAppUser(profileData);
+      const appUser = AuthMapper.toAppUser(profileData as Parameters<typeof AuthMapper.toAppUser>[0]);
       const session = AuthMapper.toAuthSession(authData.session, appUser);
 
       return Result.ok(session);
@@ -108,15 +119,32 @@ export class AuthRepository {
         return Result.fail(new Error('Login failed: No session data'));
       }
 
-      // 2. Check if user exists in app_users, create if not
-      const { data: existingUser } = await supabase
-        .from('app_users')
-        .select('id')
-        .eq('id', authData.user.id)
-        .single();
+      // 2. Wait a bit for trigger to complete (if just registered)
+      await new Promise(resolve => setTimeout(resolve, 100));
 
-      if (!existingUser) {
-        // User authenticated but not in app_users - create profile
+      // 3. Fetch user profile with retry
+      let profileData = null;
+      let profileError = null;
+      
+      for (let attempt = 0; attempt < 3; attempt++) {
+        const result = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('id', authData.user.id)
+          .maybeSingle();
+        
+        profileData = result.data;
+        profileError = result.error;
+        
+        if (profileData && profileData.id) break;
+        
+        if (attempt < 2) {
+          await new Promise(resolve => setTimeout(resolve, 200));
+        }
+      }
+
+      // 4. If still no profile, try to create it manually
+      if (!profileData || !profileData.id) {
         const emailPrefix = authData.user.email?.split('@')[0] || '';
         const generatedUsername = emailPrefix.length >= 3 
           ? emailPrefix 
@@ -127,24 +155,29 @@ export class AuthRepository {
           .upsert(
             {
               id: authData.user.id,
-              username: generatedUsername,
+              username: authData.user.user_metadata?.username || generatedUsername,
               email: authData.user.email || '',
-              role: 'homeowner',
+              role: (authData.user.user_metadata?.role || 'homeowner') as 'admin' | 'provider' | 'homeowner',
+              full_name: authData.user.user_metadata?.fullName || authData.user.user_metadata?.full_name,
+              phone: authData.user.user_metadata?.phone,
             },
             { onConflict: 'id', ignoreDuplicates: false }
           );
 
-        if (createError && !isDuplicateKeyError(createError)) {
+        if (createError && !isProfileExistsError(createError)) {
           return Result.fail(new Error(`Failed to create user profile: ${createError.message}`));
         }
-      }
 
-      // 3. Fetch user profile
-      const { data: profileData, error: profileError } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('id', authData.user.id)
-        .maybeSingle();
+        // Retry fetch after manual creation
+        const retryResult = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('id', authData.user.id)
+          .maybeSingle();
+        
+        profileData = retryResult.data;
+        profileError = retryResult.error;
+      }
 
       if (profileError || !profileData || !profileData.id) {
         return Result.fail(new Error(`Failed to fetch user profile: ${profileError?.message || 'No data'}`));
@@ -156,7 +189,7 @@ export class AuthRepository {
         return Result.fail(new Error('Account is deactivated'));
       }
 
-      const appUser = AuthMapper.toAppUser(profileData);
+      const appUser = AuthMapper.toAppUser(profileData as Parameters<typeof AuthMapper.toAppUser>[0]);
       const session = AuthMapper.toAuthSession(authData.session, appUser);
 
       return Result.ok(session);
@@ -205,7 +238,7 @@ export class AuthRepository {
         return Result.ok(null);
       }
 
-      const appUser = AuthMapper.toAppUser(profileData);
+      const appUser = AuthMapper.toAppUser(profileData as Parameters<typeof AuthMapper.toAppUser>[0]);
       const session = AuthMapper.toAuthSession(sessionData.session, appUser);
 
       return Result.ok(session);
@@ -228,7 +261,9 @@ export class AuthRepository {
         return Result.fail(new Error(error.message));
       }
 
-      const providerTypes = (data ?? []).map(AuthMapper.toProviderTypeOption);
+      const providerTypes = (data ?? []).map((row) => 
+        AuthMapper.toProviderTypeOption(row as Parameters<typeof AuthMapper.toProviderTypeOption>[0])
+      );
       return Result.ok(providerTypes);
     } catch (error) {
       return Result.fail(

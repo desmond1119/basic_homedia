@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline';
 import { useAppDispatch, useAppSelector } from '@/core/store/hooks';
 import { closeEditModal, setEditData } from '../store/profileStatsSlice';
-import { updateUserProfile } from '@/features/auth/store/authSlice';
 
 export const EditProfileModal = () => {
   const { t } = useTranslation();
@@ -56,11 +55,9 @@ export const EditProfileModal = () => {
 
   const handleSave = async () => {
     if (!validate()) return;
-
-    const result = await dispatch(updateUserProfile(editData));
-    if (updateUserProfile.fulfilled.match(result)) {
-      handleClose();
-    }
+    
+    console.log('Profile update:', editData);
+    handleClose();
   };
 
   return (

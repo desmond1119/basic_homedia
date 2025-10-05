@@ -5,6 +5,7 @@
 
 import { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '@/core/store/hooks';
 import { checkAuthSession } from '../store/authSlice';
 import { UserRole } from '../domain/Auth.types';
@@ -15,6 +16,7 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const location = useLocation();
   const { isAuthenticated, isInitialized, user, checkSession } = useAppSelector((state) => state.auth);
@@ -45,15 +47,16 @@ export const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) 
   // Check role-based access
   if (allowedRoles && user && !allowedRoles.includes(user.role)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900">Access Denied</h2>
-          <p className="mt-2 text-gray-600">You don't have permission to access this page.</p>
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="text-center max-w-md px-4">
+          <div className="text-6xl mb-6">🚫</div>
+          <h2 className="text-3xl font-bold text-gray-900 mb-3">{t('auth.accessDenied.title')}</h2>
+          <p className="text-gray-600 mb-6">{t('auth.accessDenied.message')}</p>
           <button
             onClick={() => window.history.back()}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="px-6 py-3 bg-primary-500 text-white rounded-full font-semibold hover:bg-primary-600 transition-colors"
           >
-            Go Back
+            {t('auth.accessDenied.goBack')}
           </button>
         </div>
       </div>
