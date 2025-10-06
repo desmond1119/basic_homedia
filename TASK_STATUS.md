@@ -15,12 +15,18 @@
   - `inspiration.sort` (第402行) → `inspiration.sortOptions`
 - 保留了第二组 `hero` 和 `sort` 作为主要版本
 
-### 3. 配置 Vitest ✅
+### 3. 生成数据库类型 ✅
+- 状态: **已完成**
+- 项目 ID: `jufwllhkgtvovyazgxld`
+- 文件: `src/types/database.types.ts`
+- 包含所有表的完整类型定义
+
+### 4. 配置 Vitest ✅
 - 状态: **已优化**
 - 更改: 排除 `e2e/` 目录避免与 Playwright 冲突
 - 文件: `vitest.config.ts`
 
-### 4. 单元测试 ✅
+### 5. 单元测试 ✅
 - 状态: **部分通过**
 - 通过: **20/25** (80%)
 - 失败: **5/25** (20%)
@@ -67,23 +73,22 @@ supabase status
 psql -h <host> -U postgres -d postgres -f supabase/migrations/001_idempotent_schema.sql
 ```
 
-### 2. 生成数据库类型 ⚠️
-**原因**: 需要先运行迁移
+### 2. 生成数据库类型 ✅
+**状态**: **已完成**
 
-**步骤**:
+**执行命令**:
 ```bash
-# 方法 1: 本地数据库
-supabase gen types typescript --local > src/types/database.types.ts
-
-# 方法 2: 使用项目 ID
-export SUPABASE_PROJECT_ID=your-project-id
+export SUPABASE_PROJECT_ID=jufwllhkgtvovyazgxld
 npm run gen:types
-
-# 方法 3: 数据库 URL
-supabase gen types typescript \
-  --db-url 'postgresql://postgres:[password]@[host]:5432/postgres' \
-  > src/types/database.types.ts
 ```
+
+**生成的类型包括**:
+- ✅ app_users
+- ✅ bookmarks, categories, comments
+- ✅ follows, likes, messages
+- ✅ portfolios, posts
+- ✅ provider_profiles, provider_services, provider_types
+- ✅ reposts, reviews
 
 ### 3. E2E 测试 ⚠️
 **状态**: 未运行
@@ -223,9 +228,18 @@ npm run test -- --grep "ErrorTranslator|FeatureFlags"
 - ✅ JSON 重复键已修复
 - ✅ Vitest 配置优化
 - ✅ 核心功能测试通过 (ErrorTranslator, FeatureFlags)
-- ⚠️ 数据库迁移待执行
-- ⚠️ 类型生成待执行
+- ✅ 数据库类型生成成功
+- ⚠️ 数据库迁移待执行 (需要 Docker)
 - ⚠️ E2E 测试待运行
-- ⚠️ 部分单元测试需要修复
+- ⚠️ 部分单元测试需要修复 (5个需要 Supabase mock)
 
-**总体进度: 70% 完成** 🎉
+**总体进度: 85% 完成** 🎉
+
+## 🎊 最新更新
+
+### ✅ 数据库类型生成成功！
+- 时间: 2025-10-06 16:13
+- 使用项目 ID: `jufwllhkgtvovyazgxld`
+- 生成文件: `src/types/database.types.ts`
+- 包含 14 个表的完整类型定义
+- RTK Query APIs 现在可以使用类型安全的数据库类型
