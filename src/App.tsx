@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Provider } from 'react-redux';
+import { CookiesProvider } from 'react-cookie';
 import { store } from './core/store/store';
 import { AuthProvider } from './features/auth/context/AuthContext';
 import { SidebarNav } from './shared/components/SidebarNav';
@@ -17,6 +18,7 @@ import { ProfileStatsPage } from './features/profile/components/ProfileStatsPage
 import { AdminDashboardPage } from './features/admin/components/AdminDashboardPage';
 import { SettingsPage } from './features/settings/components/SettingsPage';
 import { ThemeProvider } from './shared/context/ThemeContext';
+import { featureFlags } from './core/config/featureFlags';
 import './i18n/config';
 
 const HomeRedirect = () => {
@@ -122,15 +124,19 @@ function AppContent() {
 }
 
 function App() {
+  const useHttpOnlyCookies = featureFlags.isEnabled('httpOnlyCookies');
+
   return (
     <Provider store={store}>
-      <AuthProvider>
-        <ThemeProvider>
-          <Router>
-            <AppContent />
-          </Router>
-        </ThemeProvider>
-      </AuthProvider>
+      <CookiesProvider>
+        <AuthProvider useHttpOnlyCookies={useHttpOnlyCookies}>
+          <ThemeProvider>
+            <Router>
+              <AppContent />
+            </Router>
+          </ThemeProvider>
+        </AuthProvider>
+      </CookiesProvider>
     </Provider>
   );
 }

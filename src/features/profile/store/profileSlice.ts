@@ -1,7 +1,5 @@
-// Profile Slice - Redux state management for user profiles
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { ProfileRepository } from '../infrastructure/ProfileRepository';
-import { createAsyncThunkWithError } from '@/core/store/base/createAsyncThunkWithError';
 import { AsyncState, initialAsyncState } from '@/core/store/base/LoadingState';
 import { UserProfile, UpdateProfileData, BookmarkedPost, FollowerUser } from '../domain/Profile.types';
 
@@ -33,53 +31,40 @@ const initialState: ProfileState = {
 
 const profileRepository = new ProfileRepository();
 
-// Thunks
-export const fetchUserProfile = createAsyncThunkWithError<UserProfile | null, string>(
+export const fetchUserProfile = createAsyncThunk<UserProfile | null, string>(
   'profile/fetchUserProfile',
-  async (userId) => {
-    return await profileRepository.getProfile(userId);
-  }
+  async (userId) => await profileRepository.getProfile(userId)
 );
 
-export const updateUserProfile = createAsyncThunkWithError<
+export const updateUserProfile = createAsyncThunk<
   UserProfile,
   { userId: string; data: UpdateProfileData }
 >(
   'profile/updateUserProfile',
-  async ({ userId, data }) => {
-    return await profileRepository.updateProfile(userId, data);
-  }
+  async ({ userId, data }) => await profileRepository.updateProfile(userId, data)
 );
 
-export const uploadUserAvatar = createAsyncThunkWithError<
+export const uploadUserAvatar = createAsyncThunk<
   string,
   { userId: string; file: File }
 >(
   'profile/uploadUserAvatar',
-  async ({ userId, file }) => {
-    return await profileRepository.uploadAvatar(userId, file);
-  }
+  async ({ userId, file }) => await profileRepository.uploadAvatar(userId, file)
 );
 
-export const fetchUserBookmarks = createAsyncThunkWithError<BookmarkedPost[], string>(
+export const fetchUserBookmarks = createAsyncThunk<BookmarkedPost[], string>(
   'profile/fetchUserBookmarks',
-  async (userId) => {
-    return await profileRepository.getUserBookmarks(userId);
-  }
+  async (userId) => await profileRepository.getUserBookmarks(userId)
 );
 
-export const fetchUserFollowers = createAsyncThunkWithError<FollowerUser[], string>(
+export const fetchUserFollowers = createAsyncThunk<FollowerUser[], string>(
   'profile/fetchUserFollowers',
-  async (userId) => {
-    return await profileRepository.getFollowers(userId);
-  }
+  async (userId) => await profileRepository.getFollowers(userId)
 );
 
-export const fetchUserFollowing = createAsyncThunkWithError<FollowerUser[], string>(
+export const fetchUserFollowing = createAsyncThunk<FollowerUser[], string>(
   'profile/fetchUserFollowing',
-  async (userId) => {
-    return await profileRepository.getFollowing(userId);
-  }
+  async (userId) => await profileRepository.getFollowing(userId)
 );
 
 const profileSlice = createSlice({
@@ -105,7 +90,7 @@ const profileSlice = createSlice({
       })
       .addCase(fetchUserProfile.rejected, (state, action) => {
         state.fetchProfile.status = 'failed';
-        state.fetchProfile.error = action.payload?.message ?? 'Failed to fetch profile';
+        state.fetchProfile.error = action.error.message ?? 'Failed to fetch profile';
       });
 
     // Update Profile
@@ -119,7 +104,7 @@ const profileSlice = createSlice({
       })
       .addCase(updateUserProfile.rejected, (state, action) => {
         state.updateProfile.status = 'failed';
-        state.updateProfile.error = action.payload?.message ?? 'Failed to update profile';
+        state.updateProfile.error = action.error.message ?? 'Failed to update profile';
       });
 
     // Upload Avatar
@@ -132,7 +117,7 @@ const profileSlice = createSlice({
       })
       .addCase(uploadUserAvatar.rejected, (state, action) => {
         state.uploadAvatar.status = 'failed';
-        state.uploadAvatar.error = action.payload?.message ?? 'Failed to upload avatar';
+        state.uploadAvatar.error = action.error.message ?? 'Failed to upload avatar';
       });
 
     // Fetch Bookmarks
@@ -146,7 +131,7 @@ const profileSlice = createSlice({
       })
       .addCase(fetchUserBookmarks.rejected, (state, action) => {
         state.fetchBookmarks.status = 'failed';
-        state.fetchBookmarks.error = action.payload?.message ?? 'Failed to fetch bookmarks';
+        state.fetchBookmarks.error = action.error.message ?? 'Failed to fetch bookmarks';
       });
 
     // Fetch Followers
@@ -160,7 +145,7 @@ const profileSlice = createSlice({
       })
       .addCase(fetchUserFollowers.rejected, (state, action) => {
         state.fetchFollowers.status = 'failed';
-        state.fetchFollowers.error = action.payload?.message ?? 'Failed to fetch followers';
+        state.fetchFollowers.error = action.error.message ?? 'Failed to fetch followers';
       });
 
     // Fetch Following
@@ -174,7 +159,7 @@ const profileSlice = createSlice({
       })
       .addCase(fetchUserFollowing.rejected, (state, action) => {
         state.fetchFollowing.status = 'failed';
-        state.fetchFollowing.error = action.payload?.message ?? 'Failed to fetch following';
+        state.fetchFollowing.error = action.error.message ?? 'Failed to fetch following';
       });
   },
 });

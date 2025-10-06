@@ -1,18 +1,16 @@
 // Profile Repository - Data access layer for user profiles
 import { supabase } from '@/core/infrastructure/supabase/client';
-import { Result } from '@/core/domain/base/Result';
 import { ProfileMapper } from './ProfileMapper';
 import { UserProfile, UpdateProfileData, BookmarkedPost, FollowerUser } from '../domain/Profile.types';
 
 export class ProfileRepository {
   // Fetch user profile with stats
-  async getProfile(userId: string): Promise<Result<UserProfile | null, Error>> {
+  async getProfile(userId: string): Promise<UserProfile | null> {
     try {
       // Check if user is authenticated
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        console.error('No active session');
-        return Result.fail(new Error('Not authenticated'));
+        throw new Error('Not authenticated');
       }
 
       console.log('Fetching profile for user:', userId);
@@ -24,8 +22,7 @@ export class ProfileRepository {
       });
 
       if (!rpcError && rpcData && rpcData.length > 0) {
-        const profile = ProfileMapper.toUserProfile(rpcData[0]);
-        return Result.ok(profile);
+        return ProfileMapper.toUserProfile(rpcData[0]);
       }
 
       // Fallback: Query app_users table directly (more reliable than view)
@@ -39,21 +36,12 @@ export class ProfileRepository {
 
       if (userError) {
         console.error('Failed to fetch from app_users:', userError);
-        console.error('Error code:', userError.code);
-        console.error('Error details:', userError.details);
-        console.error('Error hint:', userError.hint);
-        
-        // If RLS error, provide helpful message
-        if (userError.code === 'PGRST301' || userError.message.includes('row-level security')) {
-          return Result.fail(new Error('Database permission error. Please ensure RLS policies are correctly set up.'));
-        }
-        
-        return Result.fail(new Error(userError.message));
+        throw new Error(userError.message);
       }
 
       if (!userData) {
         console.warn('No user found with id:', userId);
-        return Result.ok(null);
+        return null;
       }
 
       console.log('User data fetched successfully:', userData.username);
@@ -82,20 +70,32 @@ export class ProfileRepository {
 
       console.log('Profile data assembled:', profileData.username);
 
-      const profile = ProfileMapper.toUserProfile(profileData);
-      return Result.ok(profile);
+      return ProfileMapper.toUserProfile(profileData);
     } catch (error) {
       console.error('Unexpected error in getProfile:', error);
-      return Result.fail(error instanceof Error ? error : new Error('Unknown error'));
+      throw error instanceof Error ? error : new Error('Unknown error');
     }
   }
 
   // Update user profile
-  async updateProfile(userId: string, data: UpdateProfileData): Promise<Result<UserProfile, Error>> {
+  async updateProfile(userId: string, data: UpdateProfileData): Promise<UserProfile> {
     try {
+      // Validate username uniqueness if changed
+      if (data.username) {
+        const { data: existing, error: checkError } = await supabase
+          .from('app_users')
+          .select('id')
+          .eq('username', data.username)
+          .neq('id', userId)
+          .maybeSingle();
+
+        if (checkError) throw new Error(checkError.message);
+        if (existing) throw new Error('Username already taken');
+      }
+
       // Validate bio length
       if (data.bio && data.bio.length > 500) {
-        return Result.fail(new Error('Bio must be 500 characters or less'));
+        throw new Error('Bio must be 500 characters or less');
       }
 
       const updateData: Record<string, unknown> = {};
@@ -113,28 +113,22 @@ export class ProfileRepository {
         .eq('id', userId);
 
       if (error) {
-        return Result.fail(new Error(error.message));
+        throw new Error(error.message);
       }
 
-      // Fetch updated profile
-      const profileResult = await this.getProfile(userId);
-      if (profileResult.isFailure()) {
-        return Result.fail(profileResult.getError());
-      }
-
-      const profile = profileResult.getValue();
+      const profile = await this.getProfile(userId);
       if (!profile) {
-        return Result.fail(new Error('Profile not found after update'));
+        throw new Error('Profile not found after update');
       }
 
-      return Result.ok(profile);
+      return profile;
     } catch (error) {
-      return Result.fail(error instanceof Error ? error : new Error('Unknown error'));
+      throw error instanceof Error ? error : new Error('Unknown error');
     }
   }
 
   // Upload avatar to Supabase Storage
-  async uploadAvatar(userId: string, file: File): Promise<Result<string, Error>> {
+  async uploadAvatar(userId: string, file: File): Promise<string> {
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `${userId}/avatar-${Date.now()}.${fileExt}`;
@@ -144,39 +138,38 @@ export class ProfileRepository {
         .upload(fileName, file, { upsert: true });
 
       if (uploadError) {
-        return Result.fail(new Error(uploadError.message));
+        throw new Error(uploadError.message);
       }
 
       const { data: urlData } = supabase.storage
         .from('avatars')
         .getPublicUrl(fileName);
 
-      return Result.ok(urlData.publicUrl);
+      return urlData.publicUrl;
     } catch (error) {
-      return Result.fail(error instanceof Error ? error : new Error('Unknown error'));
+      throw error instanceof Error ? error : new Error('Unknown error');
     }
   }
 
   // Get user bookmarks
-  async getUserBookmarks(userId: string): Promise<Result<BookmarkedPost[], Error>> {
+  async getUserBookmarks(userId: string): Promise<BookmarkedPost[]> {
     try {
       const { data, error } = await supabase.rpc('get_user_bookmarks', {
         user_uuid: userId,
       });
 
       if (error) {
-        return Result.fail(new Error(error.message));
+        throw new Error(error.message);
       }
 
-      const bookmarks = (data || []).map(ProfileMapper.toBookmarkedPost);
-      return Result.ok(bookmarks);
+      return (data || []).map(ProfileMapper.toBookmarkedPost);
     } catch (error) {
-      return Result.fail(error instanceof Error ? error : new Error('Unknown error'));
+      throw error instanceof Error ? error : new Error('Unknown error');
     }
   }
 
   // Get followers
-  async getFollowers(userId: string): Promise<Result<FollowerUser[], Error>> {
+  async getFollowers(userId: string): Promise<FollowerUser[]> {
     try {
       const { data, error } = await supabase
         .from('follows')
@@ -184,10 +177,10 @@ export class ProfileRepository {
         .eq('followed_id', userId);
 
       if (error) {
-        return Result.fail(new Error(error.message));
+        throw new Error(error.message);
       }
 
-      const followers = (data || []).map((item) => {
+      return (data || []).map((item) => {
         const user = item.app_users as unknown as {
           id: string;
           username: string;
@@ -197,15 +190,13 @@ export class ProfileRepository {
         };
         return ProfileMapper.toFollowerUser(user);
       });
-
-      return Result.ok(followers);
     } catch (error) {
-      return Result.fail(error instanceof Error ? error : new Error('Unknown error'));
+      throw error instanceof Error ? error : new Error('Unknown error');
     }
   }
 
   // Get following
-  async getFollowing(userId: string): Promise<Result<FollowerUser[], Error>> {
+  async getFollowing(userId: string): Promise<FollowerUser[]> {
     try {
       const { data, error } = await supabase
         .from('follows')
@@ -213,10 +204,10 @@ export class ProfileRepository {
         .eq('follower_id', userId);
 
       if (error) {
-        return Result.fail(new Error(error.message));
+        throw new Error(error.message);
       }
 
-      const following = (data || []).map((item) => {
+      return (data || []).map((item) => {
         const user = item.app_users as unknown as {
           id: string;
           username: string;
@@ -226,10 +217,8 @@ export class ProfileRepository {
         };
         return ProfileMapper.toFollowerUser(user);
       });
-
-      return Result.ok(following);
     } catch (error) {
-      return Result.fail(error instanceof Error ? error : new Error('Unknown error'));
+      throw error instanceof Error ? error : new Error('Unknown error');
     }
   }
 }

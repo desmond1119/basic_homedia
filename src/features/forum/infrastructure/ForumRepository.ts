@@ -4,7 +4,6 @@
  */
 
 import { supabase } from '@/core/infrastructure/supabase/client';
-import { Result } from '@/core/domain/base/Result';
 import { ForumMapper } from './ForumMapper';
 import {
   Category,
@@ -17,26 +16,16 @@ import {
 } from '../domain/Forum.types';
 
 export class ForumRepository {
-  // Categories
-  async getCategories(): Promise<Result<Category[], Error>> {
-    try {
-      const { data, error } = await supabase
-        .from('categories')
-        .select('*')
-        .eq('is_active', true)
-        .order('display_order');
+  async getCategories(): Promise<Category[]> {
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('is_active', true)
+      .order('display_order');
 
-      if (error) {
-        return Result.fail(new Error(error.message));
-      }
+    if (error) throw new Error(error.message);
 
-      const categories = (data || []).map(ForumMapper.toCategory);
-      return Result.ok(categories);
-    } catch (error) {
-      return Result.fail(
-        error instanceof Error ? error : new Error('Unknown error')
-      );
-    }
+    return (data || []).map(ForumMapper.toCategory);
   }
 
   async createCategory(data: CreateCategoryData): Promise<Result<Category, Error>> {

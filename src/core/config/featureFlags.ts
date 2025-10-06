@@ -4,6 +4,10 @@ export interface FeatureFlags {
   aiRecommendations: boolean;
   realTimeNotifications: boolean;
   betaFeatures: boolean;
+  cdnImages: boolean;
+  lazyLoadImages: boolean;
+  virtualScrolling: boolean;
+  httpOnlyCookies: boolean;
 }
 
 const getDefaultFlags = (): FeatureFlags => ({
@@ -12,6 +16,10 @@ const getDefaultFlags = (): FeatureFlags => ({
   aiRecommendations: false,
   realTimeNotifications: false,
   betaFeatures: import.meta.env.DEV,
+  cdnImages: true,
+  lazyLoadImages: true,
+  virtualScrolling: false,
+  httpOnlyCookies: true,
 });
 
 class FeatureFlagService {

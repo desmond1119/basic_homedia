@@ -1,8 +1,8 @@
 import { supabase } from '@/core/infrastructure/supabase/client';
 import { ProfileStatsMapper } from './ProfileStatsMapper';
-import { UserStats, CollectedImage } from '../domain/Profile.types';
+import { UserStats, CollectedImage, FollowedCompany } from '../domain/Profile.types';
 
-export class ProfileStatsRepository {
+export class ProfileStatsRepositoryFixed {
   async fetchUserStats(userId: string): Promise<UserStats> {
     const { data: userData, error: userError } = await supabase
       .from('app_users')
@@ -13,12 +13,12 @@ export class ProfileStatsRepository {
     if (userError) throw new Error(userError.message);
     if (!userData) throw new Error('User not found');
 
-    const { data: followersCount } = await supabase
+    const { count: followersCount } = await supabase
       .from('follows')
       .select('*', { count: 'exact', head: true })
       .eq('followed_id', userId);
 
-    const { data: followingCount } = await supabase
+    const { count: followingCount } = await supabase
       .from('follows')
       .select('*', { count: 'exact', head: true })
       .eq('follower_id', userId);
@@ -35,7 +35,7 @@ export class ProfileStatsRepository {
       .eq('user_id', userId)
       .eq('is_deleted', false);
 
-    const statsData = {
+    const statsData: any = {
       user_id: userData.id,
       username: userData.username,
       full_name: userData.full_name,
@@ -52,7 +52,7 @@ export class ProfileStatsRepository {
       created_at: userData.created_at,
     };
 
-    return ProfileStatsMapper.toUserStats(statsData as any, []);
+    return ProfileStatsMapper.toUserStats(statsData, []);
   }
 
   async fetchCollectedImages(userId: string, limit = 20, offset = 0): Promise<CollectedImage[]> {
@@ -81,10 +81,45 @@ export class ProfileStatsRepository {
       portfolioId: bookmark.post_id || '',
       title: bookmark.posts?.title || '',
       coverImageUrl: bookmark.posts?.media_urls?.[0] || null,
-      providerId: '',
       providerName: '',
       providerAvatar: null,
-      providerLogo: null,
+      likesCount: 0,
+      viewsCount: 0,
+    }));
+  }
+
+  async fetchFollowedCompanies(userId: string, limit = 20, offset = 0): Promise<FollowedCompany[]> {
+    const { data, error } = await supabase
+      .from('follows')
+      .select(`
+        id,
+        created_at,
+        followed_id,
+        app_users!follows_followed_id_fkey (
+          id,
+          username,
+          full_name,
+          avatar_url,
+          bio,
+          company_name
+        )
+      `)
+      .eq('follower_id', userId)
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
+
+    if (error) throw new Error(error.message);
+
+    return (data || []).map((follow: any) => ({
+      followId: follow.id,
+      followedAt: follow.created_at,
+      companyId: follow.followed_id,
+      username: follow.app_users?.username || '',
+      companyName: follow.app_users?.company_name || follow.app_users?.full_name || '',
+      logoUrl: follow.app_users?.avatar_url || null,
+      bio: follow.app_users?.bio || null,
+      portfoliosCount: 0,
+      avgRating: 0,
     }));
   }
 
@@ -101,22 +136,13 @@ export class ProfileStatsRepository {
     const channel = supabase
       .channel(`user_stats:${userId}`)
       .on(
-        'postgres_changes' as any,
+        'postgres_changes',
         {
           event: 'UPDATE',
+          schema: 'public',
           table: 'app_users',
           filter: `id=eq.${userId}`,
-        } as any,
-        refreshStats
-      )
-      .on(
-        'postgres_changes' as any,
-        {
-          event: '*',
-          schema: 'public',
-          table: 'posts',
-          filter: `user_id=eq.${userId}`,
-        } as any,
+        },
         refreshStats
       )
       .subscribe();

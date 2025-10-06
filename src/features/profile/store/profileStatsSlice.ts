@@ -1,7 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { createAsyncThunkWithError } from '@/core/store/base/createAsyncThunkWithError';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { AsyncState, initialAsyncState } from '@/core/store/base/LoadingState';
-import { ProfileStatsRepository } from '../infrastructure/ProfileStatsRepository';
+import { ProfileStatsRepositoryFixed as ProfileStatsRepository } from '../infrastructure/ProfileStatsRepositoryFixed';
 import { UserStats, CollectedImage, FollowedCompany, CollectionTab, UpdateProfileData } from '../domain/Profile.types';
 
 interface ProfileStatsState {
@@ -34,31 +33,27 @@ const initialState: ProfileStatsState = {
 
 const repository = new ProfileStatsRepository();
 
-export const fetchUserStats = createAsyncThunkWithError<UserStats, string>(
+export const fetchUserStats = createAsyncThunk<UserStats, string>(
   'profileStats/fetchUserStats',
-  async (userId) => {
-    return await repository.fetchUserStats(userId);
-  }
+  async (userId) => await repository.fetchUserStats(userId)
 );
 
-export const fetchCollectedImages = createAsyncThunkWithError<
+export const fetchCollectedImages = createAsyncThunk<
   CollectedImage[],
   { userId: string; limit?: number; offset?: number }
 >(
   'profileStats/fetchCollectedImages',
-  async ({ userId, limit = 20, offset = 0 }) => {
-    return await repository.fetchCollectedImages(userId, limit, offset);
-  }
+  async ({ userId, limit = 20, offset = 0 }) =>
+    await repository.fetchCollectedImages(userId, limit, offset)
 );
 
-export const fetchFollowedCompanies = createAsyncThunkWithError<
+export const fetchFollowedCompanies = createAsyncThunk<
   FollowedCompany[],
   { userId: string; limit?: number; offset?: number }
 >(
   'profileStats/fetchFollowedCompanies',
-  async ({ userId, limit = 20, offset = 0 }) => {
-    return await repository.fetchFollowedCompanies(userId, limit, offset);
-  }
+  async ({ userId, limit = 20, offset = 0 }) =>
+    await repository.fetchFollowedCompanies(userId, limit, offset)
 );
 
 const profileStatsSlice = createSlice({
@@ -107,7 +102,7 @@ const profileStatsSlice = createSlice({
       })
       .addCase(fetchUserStats.rejected, (state, action) => {
         state.fetchStats.status = 'failed';
-        state.fetchStats.error = action.payload?.message ?? 'Failed to fetch user stats';
+        state.fetchStats.error = action.error.message ?? 'Failed to fetch user stats';
       });
 
     builder
@@ -125,7 +120,7 @@ const profileStatsSlice = createSlice({
       })
       .addCase(fetchCollectedImages.rejected, (state, action) => {
         state.fetchCollections.status = 'failed';
-        state.fetchCollections.error = action.payload?.message ?? 'Failed to fetch collected images';
+        state.fetchCollections.error = action.error.message ?? 'Failed to fetch collected images';
       });
 
     builder
@@ -143,7 +138,7 @@ const profileStatsSlice = createSlice({
       })
       .addCase(fetchFollowedCompanies.rejected, (state, action) => {
         state.fetchCollections.status = 'failed';
-        state.fetchCollections.error = action.payload?.message ?? 'Failed to fetch followed companies';
+        state.fetchCollections.error = action.error.message ?? 'Failed to fetch followed companies';
       });
   },
 });

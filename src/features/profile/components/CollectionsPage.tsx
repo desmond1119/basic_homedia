@@ -66,16 +66,16 @@ export const CollectionsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black py-12">
+    <div className="min-h-screen bg-white py-12">
       <div className="max-w-7xl mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-4xl font-bold text-white mb-6">{t('profile.collections.title')}</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-6">{t('profile.collections.title')}</h1>
 
-          <div className="flex gap-4 border-b border-gray-800">
+          <div className="flex gap-4 border-b-2 border-gray-200">
             <TabButton
               isActive={activeTab === 'images'}
               onClick={() => handleTabChange('images')}
@@ -108,9 +108,9 @@ export const CollectionsPage = () => {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: index * 0.05 }}
-                  whileHover={{ scale: 1.05, y: -4 }}
+                  whileHover={{ scale: 1.05, y: -4, boxShadow: '0 8px 24px rgba(0,0,0,0.12)' }}
                   onClick={() => navigate(`/portfolio/${image.portfolioId}`)}
-                  className="relative aspect-square rounded-2xl overflow-hidden cursor-pointer group bg-gray-900"
+                  className="relative aspect-square rounded-2xl overflow-hidden cursor-pointer group bg-gray-100 shadow-sm"
                 >
                   {image.coverImageUrl ? (
                     <img
@@ -150,9 +150,9 @@ export const CollectionsPage = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  whileHover={{ y: -4, boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}
+                  whileHover={{ y: -4, boxShadow: '0 8px 24px rgba(0,0,0,0.12)' }}
                   onClick={() => navigate(`/provider/${company.companyId}`)}
-                  className="bg-gray-900 rounded-2xl border border-gray-800 p-6 cursor-pointer hover:border-gray-700 transition-all"
+                  className="bg-white rounded-2xl border-2 border-gray-200 p-6 cursor-pointer hover:border-red-300 transition-all shadow-sm"
                 >
                   <div className="flex items-start gap-4 mb-4">
                     {company.logoUrl ? (
@@ -162,29 +162,29 @@ export const CollectionsPage = () => {
                         className="w-16 h-16 rounded-xl object-cover bg-white p-2"
                       />
                     ) : (
-                      <div className="w-16 h-16 rounded-xl bg-gray-800 flex items-center justify-center">
-                        <BuildingOfficeIcon className="w-8 h-8 text-gray-600" />
+                      <div className="w-16 h-16 rounded-xl bg-gray-100 flex items-center justify-center">
+                        <BuildingOfficeIcon className="w-8 h-8 text-gray-400" />
                       </div>
                     )}
                     <div className="flex-1">
-                      <h3 className="text-white font-bold text-lg mb-1">
+                      <h3 className="text-gray-900 font-bold text-lg mb-1">
                         {company.companyName || company.username}
                       </h3>
                       {company.avgRating > 0 && (
-                        <div className="flex items-center gap-1 text-yellow-500 text-sm">
+                        <div className="flex items-center gap-1 text-yellow-600 text-sm">
                           <StarIcon className="w-4 h-4" />
-                          <span>{company.avgRating.toFixed(1)}</span>
+                          <span className="font-semibold">{company.avgRating.toFixed(1)}</span>
                         </div>
                       )}
                     </div>
                   </div>
 
                   {company.bio && (
-                    <p className="text-gray-400 text-sm mb-4 line-clamp-2">{company.bio}</p>
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">{company.bio}</p>
                   )}
 
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-500">
+                    <span className="text-gray-500 font-medium">
                       {t('profile.collections.portfoliosCount', { count: company.portfoliosCount })}
                     </span>
                     <span className="text-gray-400">
@@ -202,22 +202,22 @@ export const CollectionsPage = () => {
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-              className="w-8 h-8 border-4 border-white/20 border-t-white rounded-full"
+              className="w-8 h-8 border-4 border-gray-200 border-t-red-500 rounded-full"
             />
           )}
         </div>
 
         {activeTab === 'images' && collectedImages.length === 0 && fetchCollections.status === 'succeeded' && (
           <div className="text-center py-12">
-            <PhotoIcon className="w-20 h-20 text-gray-700 mx-auto mb-4" />
-            <p className="text-gray-400 text-lg">{t('profile.collections.noImages')}</p>
+            <PhotoIcon className="w-20 h-20 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500 text-lg">{t('profile.collections.noImages')}</p>
           </div>
         )}
 
         {activeTab === 'companies' && followedCompanies.length === 0 && fetchCollections.status === 'succeeded' && (
           <div className="text-center py-12">
-            <BuildingOfficeIcon className="w-20 h-20 text-gray-700 mx-auto mb-4" />
-            <p className="text-gray-400 text-lg">{t('profile.collections.noCompanies')}</p>
+            <BuildingOfficeIcon className="w-20 h-20 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500 text-lg">{t('profile.collections.noCompanies')}</p>
           </div>
         )}
       </div>
@@ -239,16 +239,18 @@ const TabButton = ({ isActive, onClick, icon, label, count }: TabButtonProps) =>
     whileTap={{ scale: 0.98 }}
     onClick={onClick}
     className={`flex items-center gap-2 px-6 py-4 font-semibold transition-colors relative ${
-      isActive ? 'text-white' : 'text-gray-500 hover:text-gray-300'
+      isActive ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
     }`}
   >
     {icon}
     <span>{label}</span>
-    <span className="ml-2 px-2 py-0.5 bg-gray-800 rounded-full text-xs">{count}</span>
+    <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
+      isActive ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'
+    }`}>{count}</span>
     {isActive && (
       <motion.div
         layoutId="activeTab"
-        className="absolute bottom-0 left-0 right-0 h-0.5 bg-white"
+        className="absolute bottom-0 left-0 right-0 h-1 bg-red-500 rounded-t"
         transition={{ type: 'spring', stiffness: 500, damping: 30 }}
       />
     )}

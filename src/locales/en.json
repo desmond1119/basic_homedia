@@ -124,19 +124,23 @@
       "delete": "Delete Post",
       "category": "Category",
       "categoryPlaceholder": "Select a category",
-      "categoryRequired": "Category",
+      "categoryRequired": "Please select a category",
       "title": "Title",
       "titlePlaceholder": "What's your post about?",
-      "titleRequired": "Title",
+      "titleRequired": "Title must be at least 3 characters",
       "content": "Content",
       "contentPlaceholder": "Share your thoughts...",
-      "contentRequired": "Content",
+      "contentRequired": "Content must be at least 10 characters",
       "tags": "Tags (comma-separated)",
       "tagsPlaceholder": "renovation, tips, diy",
+      "tagsUnique": "Tags must be unique",
       "media": "Photos/Videos",
+      "mediaUpload": "Click to upload photos or videos",
       "mediaSelected": "{{count}} file(s) selected",
+      "mediaLimit": "Maximum 10 files allowed",
       "posting": "Posting...",
-      "post": "Post"
+      "post": "Post",
+      "published": "Post published successfully!"
     },
     "card": {
       "like": "Like",
@@ -486,6 +490,7 @@
   },
   "error": {
     "unknown": "An unexpected error occurred",
+    "unexpectedError": "An unexpected error occurred",
     "network": "Network connection failed. Please check your internet connection",
     "timeout": "Request timed out. Please try again",
     "notFound": "Resource not found",
@@ -495,11 +500,16 @@
     "tableNotFound": "Database table not found",
     "insufficientPrivilege": "Insufficient database privileges",
     "somethingWrong": "Something went wrong",
-    "unexpectedError": "An unexpected error occurred",
     "reloadPage": "Reload Page",
     "accessDenied": "Access Denied",
     "noPermission": "You don't have permission to access this page",
     "goBack": "Go Back",
-    "duplicateProfile": "Profile already exists"
+    "duplicateProfile": "Profile already exists",
+    "checkViolation": "Invalid data format",
+    "serializationFailure": "Transaction conflict, please retry",
+    "deadlockDetected": "Database deadlock detected",
+    "fileTooLarge": "File size exceeds limit",
+    "invalidFileType": "Invalid file type",
+    "storageQuotaExceeded": "Storage quota exceeded"
   }
 }
