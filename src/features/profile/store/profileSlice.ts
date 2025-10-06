@@ -62,35 +62,46 @@ export const fetchUserProfile = createAsyncThunk<any, string>(
   }
 );
 
-export const updateUserProfile = createAsyncThunk<
-  UserProfile,
-  { userId: string; data: UpdateProfileData }
->(
+export const updateUserProfile = createAsyncThunk<any, { userId: string; data: UpdateProfileData }>(
   'profile/updateUserProfile',
-  async ({ userId, data }) => await profileRepository.updateProfile(userId, data)
+  async ({ userId, data }) => {
+    await supabase.from('app_users').update(data as any).eq('id', userId);
+    return fetchUserProfile(userId);
+  }
 );
 
-export const uploadUserAvatar = createAsyncThunk<
-  string,
-  { userId: string; file: File }
->(
+export const uploadUserAvatar = createAsyncThunk<string, { userId: string; file: File }>(
   'profile/uploadUserAvatar',
-  async ({ userId, file }) => await profileRepository.uploadAvatar(userId, file)
+  async ({ userId, file }) => {
+    const fileName = `${userId}/avatar-${Date.now()}.${file.name.split('.').pop()}`;
+    await supabase.storage.from('avatars').upload(fileName, file, { upsert: true });
+    const { data } = supabase.storage.from('avatars').getPublicUrl(fileName);
+    return data.publicUrl;
+  }
 );
 
-export const fetchUserBookmarks = createAsyncThunk<BookmarkedPost[], string>(
+export const fetchUserBookmarks = createAsyncThunk<any[], string>(
   'profile/fetchUserBookmarks',
-  async (userId) => await profileRepository.getUserBookmarks(userId)
+  async (userId) => {
+    const { data } = await supabase.from('bookmarks').select('*').eq('user_id', userId);
+    return data || [];
+  }
 );
 
-export const fetchUserFollowers = createAsyncThunk<FollowerUser[], string>(
+export const fetchUserFollowers = createAsyncThunk<any[], string>(
   'profile/fetchUserFollowers',
-  async (userId) => await profileRepository.getFollowers(userId)
+  async (userId) => {
+    const { data } = await supabase.from('follows').select('*').eq('following_id', userId);
+    return data || [];
+  }
 );
 
-export const fetchUserFollowing = createAsyncThunk<FollowerUser[], string>(
+export const fetchUserFollowing = createAsyncThunk<any[], string>(
   'profile/fetchUserFollowing',
-  async (userId) => await profileRepository.getFollowing(userId)
+  async (userId) => {
+    const { data } = await supabase.from('follows').select('*').eq('follower_id', userId);
+    return data || [];
+  }
 );
 
 const profileSlice = createSlice({
