@@ -9,6 +9,8 @@ import {
   GlobeAltIcon,
   PaintBrushIcon
 } from '@heroicons/react/24/outline';
+import { Input } from '@/shared/components/Input';
+import { Textarea } from '@/shared/components/Textarea';
 
 export const SettingsPage = () => {
   const { t } = useTranslation();
@@ -24,7 +26,7 @@ export const SettingsPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-white py-8">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -42,7 +44,7 @@ export const SettingsPage = () => {
             animate={{ opacity: 1, x: 0 }}
             className="lg:col-span-1"
           >
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-2">
+            <div className="bg-gray-50 rounded-2xl border border-gray-200 p-2">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 return (
@@ -51,8 +53,8 @@ export const SettingsPage = () => {
                     onClick={() => setActiveTab(tab.id)}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                       activeTab === tab.id
-                        ? 'bg-primary-50 text-primary-600 font-medium'
-                        : 'text-gray-700 hover:bg-gray-50'
+                        ? 'bg-red-500 text-white font-medium'
+                        : 'text-gray-700 hover:bg-gray-100'
                     }`}
                   >
                     <Icon className="w-5 h-5" />
@@ -69,7 +71,7 @@ export const SettingsPage = () => {
             animate={{ opacity: 1, x: 0 }}
             className="lg:col-span-3"
           >
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
               {activeTab === 'profile' && <ProfileSettings user={user} />}
               {activeTab === 'notifications' && <NotificationSettings />}
               {activeTab === 'privacy' && <PrivacySettings />}
@@ -94,60 +96,42 @@ const ProfileSettings = ({ user }: { user: any }) => {
       </div>
 
       <div className="flex items-center gap-4">
-        <div className="w-20 h-20 bg-primary-500 rounded-full flex items-center justify-center text-white text-2xl font-semibold">
+        <div className="w-20 h-20 bg-red-500 rounded-full flex items-center justify-center text-white text-2xl font-semibold">
           {user?.username?.charAt(0).toUpperCase()}
         </div>
         <button className="btn-secondary text-sm">{t('settings.profile.changeAvatar')}</button>
       </div>
 
       <div className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            {t('settings.profile.username')}
-          </label>
-          <input
-            type="text"
-            defaultValue={user?.username}
-            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-          />
-        </div>
+        <Input
+          label={t('settings.profile.username')}
+          type="text"
+          defaultValue={user?.username}
+        />
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            {t('settings.profile.email')}
-          </label>
-          <input
+          <Input
+            label={t('settings.profile.email')}
             type="email"
             defaultValue={user?.email}
             disabled
-            className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-50 text-gray-500"
           />
           <p className="mt-1 text-xs text-gray-500">{t('settings.profile.emailNote')}</p>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            {t('settings.profile.fullName')}
-          </label>
-          <input
-            type="text"
-            defaultValue={user?.full_name || ''}
-            placeholder={t('settings.profile.fullNamePlaceholder')}
-            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-          />
-        </div>
+        <Input
+          label={t('settings.profile.fullName')}
+          type="text"
+          defaultValue={user?.full_name || ''}
+          placeholder={t('settings.profile.fullNamePlaceholder')}
+        />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            {t('settings.profile.bio')}
-          </label>
-          <textarea
-            rows={4}
-            defaultValue={user?.bio || ''}
-            placeholder={t('settings.profile.bioPlaceholder')}
-            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-          />
-        </div>
+        <Textarea
+          label={t('settings.profile.bio')}
+          rows={4}
+          defaultValue={user?.bio || ''}
+          placeholder={t('settings.profile.bioPlaceholder')}
+        />
       </div>
 
       <div className="flex justify-end gap-3 pt-4">

@@ -1,13 +1,15 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { CookiesProvider } from 'react-cookie';
+import { Toaster } from 'react-hot-toast';
 import { store } from './core/store/store';
 import { AuthProvider } from './features/auth/context/AuthContext';
 import { SidebarNav } from './shared/components/SidebarNav';
 import { PinterestFeedPage } from './features/inspiration/components/PinterestFeedPage';
 import { ProviderListPage } from './features/provider/components/ProviderListPage';
 import { ProviderProfilePage } from './features/provider/components/ProviderProfilePage';
-import { ForumPage } from './features/forum/components/ForumPage';
+import { ForumPageThreads } from './features/forum/components/ForumPageThreads';
+import { PostDetailPageEnhanced } from './features/forum/components/PostDetailPageEnhanced';
 import { PinterestLoginPage } from './features/auth/components/PinterestLoginPage';
 import { PinterestRegisterPage } from './features/auth/components/PinterestRegisterPage';
 import { ProtectedRoute } from './features/auth/components/ProtectedRoute';
@@ -18,7 +20,6 @@ import { ProfileStatsPage } from './features/profile/components/ProfileStatsPage
 import { AdminDashboardPage } from './features/admin/components/AdminDashboardPage';
 import { SettingsPage } from './features/settings/components/SettingsPage';
 import { ThemeProvider } from './shared/context/ThemeContext';
-import { featureFlags } from './core/config/featureFlags';
 import './i18n/config';
 
 const HomeRedirect = () => {
@@ -48,7 +49,8 @@ function AppContent() {
             <Route path="/inspiration" element={<PinterestFeedPage />} />
             <Route path="/providers" element={<ProviderListPage />} />
             <Route path="/providers/:id" element={<ProviderProfilePage />} />
-            <Route path="/forum" element={<ForumPage />} />
+            <Route path="/forum" element={<ForumPageThreads />} />
+            <Route path="/forum/post/:postId" element={<PostDetailPageEnhanced />} />
             <Route path="/login" element={<PinterestLoginPage />} />
             <Route path="/register" element={<PinterestRegisterPage />} />
             
@@ -132,14 +134,13 @@ function AppContent() {
 }
 
 function App() {
-  const useHttpOnlyCookies = featureFlags.isEnabled('httpOnlyCookies');
-
   return (
     <Provider store={store}>
       <CookiesProvider>
-        <AuthProvider useHttpOnlyCookies={useHttpOnlyCookies}>
+        <AuthProvider>
           <ThemeProvider>
             <Router>
+              <Toaster position="top-right" />
               <AppContent />
             </Router>
           </ThemeProvider>

@@ -6,14 +6,14 @@ import { ForumMapper } from '../infrastructure/ForumMapper';
 const supabaseBaseQuery = async ({ method, table, query, data }: {
   method: 'select' | 'insert' | 'update' | 'delete' | 'rpc';
   table?: string;
-  query?: Record<string, unknown>;
-  data?: unknown;
+  query?: Record<string, any>;
+  data?: any;
 }) => {
   try {
     let result;
 
     if (method === 'select' && table) {
-      const queryBuilder = supabase.from(table).select(query?.select as string || '*');
+      const queryBuilder = supabase.from(table as any).select(query?.select as string || '*');
       
       if (query?.eq) {
         Object.entries(query.eq as Record<string, unknown>).forEach(([key, value]) => {
@@ -26,13 +26,13 @@ const supabaseBaseQuery = async ({ method, table, query, data }: {
       
       result = await queryBuilder;
     } else if (method === 'insert' && table) {
-      result = await supabase.from(table).insert(data).select().single();
+      result = await supabase.from(table as any).insert(data).select().single();
     } else if (method === 'update' && table && query?.id) {
-      result = await supabase.from(table).update(data).eq('id', query.id).select().single();
+      result = await supabase.from(table as any).update(data).eq('id', query.id).select().single();
     } else if (method === 'delete' && table && query?.id) {
-      result = await supabase.from(table).delete().eq('id', query.id);
+      result = await supabase.from(table as any).delete().eq('id', query.id);
     } else if (method === 'rpc' && table) {
-      result = await supabase.rpc(table, data as Record<string, unknown>);
+      result = await supabase.rpc(table as any, data as Record<string, unknown>);
     }
 
     if (result?.error) {
@@ -61,11 +61,11 @@ export const forumApi = createApi({
           offset,
         },
       }),
-      transformResponse: (response: unknown[]) => response.map(ForumMapper.toPost),
+      transformResponse: (response: any[]) => response.map((item: any) => ForumMapper.toPost(item)),
       providesTags: ['Post'],
     }),
 
-    getPostById: builder.query<Post, string>({
+    getPostById: builder.query<Post | null, string>({
       query: (id) => ({
         method: 'select',
         table: 'posts',
@@ -74,17 +74,23 @@ export const forumApi = createApi({
           eq: { id },
         },
       }),
-      transformResponse: (response: unknown[]) => response[0] ? ForumMapper.toPost(response[0]) : null,
-      providesTags: (result, error, id) => [{ type: 'Post', id }],
+      transformResponse: (response: any[]) => response[0] ? ForumMapper.toPost(response[0]) : null,
+      providesTags: (_result, _error, id) => [{ type: 'Post', id }],
     }),
 
-    createPost: builder.mutation<Post, { userId: string; data: CreatePostData }>({
-      query: ({ userId, data }) => ({
-        method: 'insert',
-        table: 'posts',
-        data: { ...data, user_id: userId },
+    createPost: builder.mutation<Post, CreatePostData>({
+      query: (data) => ({
+        method: 'rpc',
+        table: 'create_post',
+        data: {
+          p_category_id: data.categoryId,
+          p_title: data.title,
+          p_content: data.content,
+          p_tags: data.tags || [],
+          p_media_urls: data.mediaUrls || [],
+        },
       }),
-      transformResponse: (response: unknown) => ForumMapper.toPost(response),
+      transformResponse: (response: any) => ForumMapper.toPost(response),
       invalidatesTags: ['Post'],
     }),
 
@@ -94,7 +100,7 @@ export const forumApi = createApi({
         table: 'categories',
         query: { select: '*' },
       }),
-      transformResponse: (response: unknown[]) => response.map(ForumMapper.toCategory),
+      transformResponse: (response: any[]) => response.map((item: any) => ForumMapper.toCategory(item)),
       providesTags: ['Category'],
     }),
 
@@ -107,8 +113,8 @@ export const forumApi = createApi({
           eq: { post_id: postId },
         },
       }),
-      transformResponse: (response: unknown[]) => response.map(ForumMapper.toComment),
-      providesTags: (result, error, postId) => [{ type: 'Comment', id: postId }],
+      transformResponse: (response: any[]) => response.map((item: any) => ForumMapper.toComment(item)),
+      providesTags: (_result, _error, postId) => [{ type: 'Comment', id: postId }],
     }),
 
     createComment: builder.mutation<Comment, { userId: string; data: CreateCommentData }>({
@@ -117,8 +123,8 @@ export const forumApi = createApi({
         table: 'comments',
         data: { ...data, user_id: userId },
       }),
-      transformResponse: (response: unknown) => ForumMapper.toComment(response),
-      invalidatesTags: (result, error, { data }) => [{ type: 'Comment', id: data.postId }],
+      transformResponse: (response: any) => ForumMapper.toComment(response),
+      invalidatesTags: (_result, _error, { data }) => [{ type: 'Comment', id: data.postId }],
     }),
   }),
 });

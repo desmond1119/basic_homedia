@@ -14,6 +14,7 @@ export interface UserProfile {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  lastUsernameChange: Date | null;
   followerCount: number;
   followingCount: number;
   postCount: number;

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { XMarkIcon, PhotoIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import { useAppDispatch, useAppSelector } from '@/core/store/hooks';
 import { closeEditModal, setEditData, fetchUserStats } from '../store/profileStatsSlice';
-import { updateUserProfile, uploadUserAvatar } from '../store/profileSlice';
+import { updateUserProfile } from '../store/profileSlice';
 import toast from 'react-hot-toast';
 
 export const EditProfileModal = () => {
@@ -65,20 +65,12 @@ export const EditProfileModal = () => {
     setIsSaving(true);
     
     try {
-      let finalData = { ...editData };
-      
-      if (avatarPreview && fileInputRef.current?.files?.[0]) {
-        const avatarUrl = await dispatch(uploadUserAvatar({
-          userId: user.id,
-          file: fileInputRef.current.files[0]
-        })).unwrap();
-        
-        finalData.avatarUrl = avatarUrl;
-      }
+      const avatarFile = avatarPreview && fileInputRef.current?.files?.[0] ? fileInputRef.current.files[0] : undefined;
 
       await dispatch(updateUserProfile({
         userId: user.id,
-        data: finalData
+        data: editData,
+        avatarFile,
       })).unwrap();
 
       await dispatch(fetchUserStats(user.id)).unwrap();
@@ -91,14 +83,29 @@ export const EditProfileModal = () => {
       handleClose();
     } catch (error) {
       console.error('Failed to save profile:', error);
-      const errorMessage = error instanceof Error ? error.message : t('error.unexpectedError');
+      const errorMsg = error instanceof Error ? error.message : t('profile.edit.error');
       
-      toast.error(errorMessage, {
+      let displayMessage = t('profile.edit.error');
+      
+      if (errorMsg === 'USERNAME_TAKEN') {
+        displayMessage = t('profile.edit.errors.usernameTaken');
+      } else if (errorMsg.startsWith('USERNAME_COOLDOWN:')) {
+        const days = errorMsg.split(':')[1];
+        displayMessage = t('profile.edit.errors.usernameCooldown', { days });
+      } else if (errorMsg === 'AVATAR_TOO_LARGE') {
+        displayMessage = t('profile.edit.errors.avatarTooLarge');
+      } else if (errorMsg === 'INVALID_FILE_TYPE') {
+        displayMessage = t('profile.edit.errors.invalidFileType');
+      } else if (errorMsg.startsWith('AVATAR_UPLOAD_FAILED:')) {
+        displayMessage = t('profile.edit.avatarUploadError');
+      }
+      
+      toast.error(displayMessage, {
         icon: <XCircleIcon className="w-5 h-5 text-red-500" />,
         duration: 4000,
       });
       
-      setErrors({ ...errors, save: errorMessage });
+      setErrors({ ...errors, save: displayMessage });
     } finally {
       setIsSaving(false);
     }
@@ -134,7 +141,6 @@ export const EditProfileModal = () => {
                   <XMarkIcon className="w-6 h-6" />
                 </button>
               </div>
-
               <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-4">
@@ -148,6 +154,13 @@ export const EditProfileModal = () => {
                             src={avatarPreview || editData.avatarUrl}
                             alt="Avatar"
                             className="w-full h-full object-cover"
+                            onError={(e) => {
+                              console.error('Avatar preview failed to load:', avatarPreview || editData.avatarUrl);
+                              e.currentTarget.style.display = 'none';
+                            }}
+                            onLoad={() => {
+                              console.log('Avatar loaded successfully:', avatarPreview || editData.avatarUrl);
+                            }}
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
@@ -181,7 +194,7 @@ export const EditProfileModal = () => {
                     type="text"
                     value={editData.username || ''}
                     onChange={(e) => dispatch(setEditData({ username: e.target.value }))}
-                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-full text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white focus:border-primary-300 transition-all duration-200"
                   />
                   {errors.username && <p className="mt-2 text-sm text-red-400">{errors.username}</p>}
                 </div>
@@ -194,7 +207,7 @@ export const EditProfileModal = () => {
                     type="text"
                     value={editData.fullName || ''}
                     onChange={(e) => dispatch(setEditData({ fullName: e.target.value }))}
-                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-full text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white focus:border-primary-300 transition-all duration-200"
                   />
                 </div>
 
@@ -208,7 +221,7 @@ export const EditProfileModal = () => {
                     rows={4}
                     maxLength={500}
                     placeholder={t('profile.edit.bioPlaceholder')}
-                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white focus:border-primary-300 transition-all duration-200 resize-none"
                   />
                   <div className="flex justify-between mt-2">
                     {errors.bio && <p className="text-sm text-red-400">{errors.bio}</p>}
@@ -225,7 +238,7 @@ export const EditProfileModal = () => {
                     value={editData.location || ''}
                     onChange={(e) => dispatch(setEditData({ location: e.target.value }))}
                     placeholder={t('profile.edit.locationPlaceholder')}
-                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-full text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white focus:border-primary-300 transition-all duration-200"
                   />
                 </div>
 

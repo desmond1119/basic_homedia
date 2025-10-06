@@ -67,19 +67,30 @@ export const UserProfilePage = () => {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <div className="flex items-start gap-6 mb-6">
-            {currentProfile.avatarUrl ? (
-              <img 
-                src={currentProfile.avatarUrl} 
-                alt={currentProfile.username} 
-                className="w-32 h-32 rounded-full ring-4 ring-gray-100 object-cover" 
-              />
-            ) : (
-              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center ring-4 ring-gray-100">
+            <div className="relative">
+              {currentProfile.avatarUrl ? (
+                <img 
+                  key={currentProfile.avatarUrl}
+                  src={currentProfile.avatarUrl} 
+                  alt={currentProfile.username} 
+                  className="w-32 h-32 rounded-full ring-4 ring-gray-100 object-cover" 
+                  onError={(e) => {
+                    console.error('Avatar failed to load:', currentProfile.avatarUrl);
+                    e.currentTarget.style.display = 'none';
+                    const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                    if (fallback) fallback.style.display = 'flex';
+                  }}
+                />
+              ) : null}
+              <div 
+                className="w-32 h-32 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center ring-4 ring-gray-100"
+                style={{ display: currentProfile.avatarUrl ? 'none' : 'flex' }}
+              >
                 <span className="text-white text-4xl font-bold">
                   {currentProfile.username?.charAt(0).toUpperCase()}
                 </span>
               </div>
-            )}
+            </div>
             <div className="flex-1">
               <h1 className="text-3xl font-bold text-gray-900 mb-1">
                 {currentProfile.fullName || currentProfile.username}

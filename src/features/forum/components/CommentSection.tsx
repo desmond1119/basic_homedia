@@ -76,10 +76,10 @@ export const CommentSection = ({ postId, comments, loading }: CommentSectionProp
             <img
               src={comment.userAvatar}
               alt={comment.username}
-              className="h-10 w-10 rounded-full ring-2 ring-gray-800"
+              className="h-10 w-10 rounded-full ring-2 ring-gray-200"
             />
           ) : (
-            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center ring-2 ring-gray-800">
+            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-red-400 to-red-500 flex items-center justify-center">
               <span className="text-white text-sm font-semibold">
                 {comment.username?.charAt(0).toUpperCase()}
               </span>
@@ -87,19 +87,22 @@ export const CommentSection = ({ postId, comments, loading }: CommentSectionProp
           )}
         </div>
 
-        <div className="flex-1 bg-gray-900 rounded-2xl p-4 border border-gray-800">
+        <div className="flex-1 bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
           <div className="flex items-center justify-between mb-2">
             <div>
-              <p className="text-sm font-semibold text-white">
-                {comment.userFullName || comment.username}
-              </p>
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-semibold text-gray-900">
+                  {comment.userFullName || comment.username}
+                </p>
+                <span className="text-xs text-gray-400">@{comment.username}</span>
+              </div>
               <p className="text-xs text-gray-500">
                 {new Date(comment.createdAt).toLocaleString()}
               </p>
             </div>
           </div>
 
-          <p className="text-gray-300 text-sm leading-relaxed">{comment.content}</p>
+          <p className="text-gray-700 text-sm leading-relaxed">{comment.content}</p>
 
           <div className="flex items-center gap-4 mt-3">
             <motion.button
@@ -107,7 +110,7 @@ export const CommentSection = ({ postId, comments, loading }: CommentSectionProp
               whileTap={{ scale: 0.9 }}
               onClick={() => handleLikeComment(comment.id, comment.isLiked || false)}
               className={`flex items-center gap-1.5 text-xs transition-colors ${
-                comment.isLiked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'
+                comment.isLiked ? 'text-red-500' : 'text-gray-400 hover:text-red-500'
               }`}
             >
               {comment.isLiked ? <HeartSolid className="w-4 h-4" /> : <HeartIcon className="w-4 h-4" />}
@@ -122,7 +125,7 @@ export const CommentSection = ({ postId, comments, loading }: CommentSectionProp
                   setReplyTo(comment.id);
                   setReplyContent('');
                 }}
-                className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-blue-400 transition-colors"
+                className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-blue-500 transition-colors"
               >
                 <ChatBubbleLeftIcon className="w-4 h-4" />
                 <span>{t('forum.comment.reply')}</span>
@@ -136,21 +139,21 @@ export const CommentSection = ({ postId, comments, loading }: CommentSectionProp
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="mt-3 pt-3 border-t border-gray-800"
+                className="mt-3 pt-3 border-t border-gray-200"
               >
                 <textarea
                   value={replyContent}
                   onChange={(e) => setReplyContent(e.target.value)}
                   placeholder={t('forum.comment.replyPlaceholder')}
                   rows={2}
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white placeholder-gray-500 resize-none focus:ring-2 focus:ring-white focus:border-transparent"
+                  className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 placeholder-gray-400 resize-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 />
                 <div className="flex justify-end gap-2 mt-2">
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setReplyTo(null)}
-                    className="px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg transition-colors"
+                    className="px-3 py-1.5 text-sm text-gray-500 hover:text-gray-700 rounded-lg transition-colors"
                   >
                     {t('common.cancel')}
                   </motion.button>
@@ -158,7 +161,7 @@ export const CommentSection = ({ postId, comments, loading }: CommentSectionProp
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => handleSubmitReply(comment.id)}
-                    className="px-4 py-1.5 text-sm bg-white text-black rounded-lg font-medium hover:bg-gray-100 transition-colors"
+                    className="px-4 py-1.5 text-sm bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition-colors"
                   >
                     {t('forum.comment.reply')}
                   </motion.button>
@@ -183,7 +186,7 @@ export const CommentSection = ({ postId, comments, loading }: CommentSectionProp
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-          className="w-8 h-8 border-4 border-white/20 border-t-white rounded-full"
+          className="w-8 h-8 border-4 border-gray-200 border-t-red-500 rounded-full"
         />
       </div>
     );
@@ -196,14 +199,14 @@ export const CommentSection = ({ postId, comments, loading }: CommentSectionProp
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           onSubmit={handleSubmitComment}
-          className="bg-gray-900 rounded-2xl p-6 border border-gray-800"
+          className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm"
         >
           <textarea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
             placeholder={t('forum.comment.placeholder')}
             rows={3}
-            className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 resize-none focus:ring-2 focus:ring-white focus:border-transparent"
+            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 resize-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
           />
           <div className="flex justify-end mt-4">
             <motion.button
@@ -211,7 +214,7 @@ export const CommentSection = ({ postId, comments, loading }: CommentSectionProp
               whileTap={{ scale: 0.95 }}
               type="submit"
               disabled={!newComment.trim()}
-              className="px-6 py-2.5 bg-white text-black rounded-full font-semibold hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-6 py-2.5 bg-red-500 text-white rounded-full font-semibold hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {t('forum.comment.submit')}
             </motion.button>

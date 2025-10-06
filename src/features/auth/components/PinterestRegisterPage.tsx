@@ -61,7 +61,11 @@ export const PinterestRegisterPage = () => {
                                errorMessage.includes('policy for relation');
       
       if (!isRecursionError && errorMessage) {
-        setError(errorMessage);
+        if (errorMessage === 'USERNAME_TAKEN' || errorMessage.includes('duplicate key')) {
+          setError(t('auth.register.errors.usernameTaken'));
+        } else {
+          setError(errorMessage);
+        }
       } else if (!isRecursionError) {
         setError(t('auth.register.error'));
       }

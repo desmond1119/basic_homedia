@@ -28,11 +28,11 @@ export const PostDetailPage = () => {
 
   if (fetchPost.status === 'pending') {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-          className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full"
+          className="w-12 h-12 border-4 border-gray-200 border-t-red-500 rounded-full"
         />
       </div>
     );
@@ -40,17 +40,17 @@ export const PostDetailPage = () => {
 
   if (!selectedPost) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center"
         >
           <div className="text-6xl mb-4">🔍</div>
-          <h2 className="text-2xl font-bold text-white mb-2">{t('forum.post.notFound')}</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('forum.post.notFound')}</h2>
           <button
             onClick={() => navigate('/forum')}
-            className="text-gray-400 hover:text-white transition-colors"
+            className="text-gray-500 hover:text-gray-700 transition-colors"
           >
             {t('common.back')}
           </button>
@@ -60,15 +60,15 @@ export const PostDetailPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black font-['Inter']">
-      <div className="sticky top-0 z-30 backdrop-blur-xl bg-black/80 border-b border-gray-800">
+    <div className="min-h-screen bg-gray-50 font-['Inter']">
+      <div className="sticky top-0 z-30 backdrop-blur-xl bg-white/80 border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.button
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             whileHover={{ x: -4 }}
             onClick={() => navigate('/forum')}
-            className="flex items-center gap-2 py-6 text-gray-400 hover:text-white transition-colors"
+            className="flex items-center gap-2 py-6 text-gray-500 hover:text-gray-700 transition-colors"
           >
             <ArrowLeftIcon className="w-5 h-5" />
             <span className="font-medium">{t('common.back')}</span>
@@ -90,7 +90,7 @@ export const PostDetailPage = () => {
           transition={{ delay: 0.1 }}
           className="mt-8"
         >
-          <h3 className="text-2xl font-bold text-white mb-6">
+          <h3 className="text-2xl font-bold text-gray-900 mb-6">
             {t('forum.comment.title')} ({selectedPost.commentCount})
           </h3>
           <CommentSection

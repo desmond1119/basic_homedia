@@ -14,7 +14,8 @@
     "submit": "提交",
     "search": "搜索",
     "noData": "暂无数据",
-    "reachedEnd": "已经到底了"
+    "reachedEnd": "已经到底了",
+    "comingSoon": "即将推出"
   },
   "auth": {
     "login": {
@@ -52,6 +53,7 @@
       "errors": {
         "usernameLength": "用户名至少需要 3 个字符",
         "usernameFormat": "用户名只能包含字母、数字和下划线",
+        "usernameTaken": "用户名已被使用",
         "emailInvalid": "无效的电子邮件地址",
         "passwordLength": "密码至少需要 8 个字符",
         "passwordMismatch": "密码不匹配",
@@ -177,11 +179,17 @@
       "cancel": "取消",
       "saving": "保存中...",
       "saved": "个人资料已更新！",
+      "error": "更新个人资料失败",
+      "avatarUploadSuccess": "头像上传成功！",
+      "avatarUploadError": "头像上传失败",
       "errors": {
         "usernameTooShort": "用户名至少需要3个字符",
         "usernameInvalid": "用户名只能包含字母、数字和下划线",
+        "usernameTaken": "用户名已被使用",
+        "usernameCooldown": "用户名每14天只能更改一次，请等待{{days}}天后再试",
         "bioTooLong": "个人简介必须少于500个字符",
-        "avatarTooLarge": "头像图片必须小于5MB"
+        "avatarTooLarge": "头像图片必须小于5MB",
+        "invalidFileType": "无效的文件类型，仅支持JPEG、PNG、GIF和WebP"
       }
     },
     "noPosts": "还没有帖子",
@@ -275,6 +283,7 @@
     "demands": "我的需求",
     "upload": "上传作品",
     "analytics": "数据分析",
+    "admin": "管理员仪表板",
     "messages": "消息",
     "manage": "管理",
     "settings": "设置",
@@ -286,6 +295,51 @@
     "title": "浏览服务商",
     "viewProfile": "查看档案",
     "noResults": "找不到服务商"
+  },
+  "admin": {
+    "save": "保存",
+    "saving": "保存中...",
+    "cancel": "取消",
+    "active": "启用",
+    "inactive": "停用",
+    "categories": {
+      "title": "管理分类",
+      "add": "添加分类",
+      "create": "创建分类",
+      "edit": "编辑分类",
+      "name": "分类名称",
+      "description": "描述",
+      "icon": "图标（表情符号）",
+      "featured": "精选分类",
+      "deleteConfirm": "确定要删除此分类吗？",
+      "createSuccess": "分类创建成功！",
+      "updateSuccess": "分类更新成功！",
+      "deleteSuccess": "分类删除成功！",
+      "errors": {
+        "nameExists": "该分类名称已存在",
+        "saveFailed": "保存分类失败",
+        "deleteFailed": "删除分类失败"
+      }
+    },
+    "providerTypes": {
+      "title": "管理服务商类型",
+      "add": "添加服务商类型",
+      "create": "创建服务商类型",
+      "edit": "编辑服务商类型",
+      "typeName": "类型名称（内部）",
+      "displayName": "显示名称",
+      "description": "描述",
+      "active": "启用",
+      "deleteConfirm": "确定要删除此服务商类型吗？",
+      "createSuccess": "服务商类型创建成功！",
+      "updateSuccess": "服务商类型更新成功！",
+      "deleteSuccess": "服务商类型删除成功！",
+      "errors": {
+        "typeExists": "该服务商类型已存在",
+        "saveFailed": "保存服务商类型失败",
+        "deleteFailed": "删除服务商类型失败"
+      }
+    }
   },
   "error": {
     "unknown": "发生未知错误",

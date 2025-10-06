@@ -11,7 +11,7 @@ export interface Category {
   icon: string | null;
   displayOrder: number;
   isActive: boolean;
-  createdAt: Date;
+  createdAt: string; // ISO date string for Redux serialization
 }
 
 export interface Post {
@@ -28,8 +28,8 @@ export interface Post {
   bookmarkCount: number;
   viewCount: number;
   isPinned: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string; // ISO date string for Redux serialization
+  updatedAt: string; // ISO date string for Redux serialization
   // Joined fields
   username?: string;
   userAvatar?: string | null;
@@ -50,8 +50,8 @@ export interface Comment {
   content: string;
   mediaUrls: string[];
   likeCount: number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string; // ISO date string for Redux serialization
+  updatedAt: string; // ISO date string for Redux serialization
   // Joined fields
   username?: string;
   userAvatar?: string | null;
@@ -67,14 +67,14 @@ export interface Like {
   userId: string;
   targetId: string;
   targetType: 'post' | 'comment';
-  createdAt: Date;
+  createdAt: string; // ISO date string for Redux serialization
 }
 
 export interface Follow {
   id: string;
   followerId: string;
   followedId: string;
-  createdAt: Date;
+  createdAt: string; // ISO date string for Redux serialization
 }
 
 export interface Message {
@@ -84,7 +84,7 @@ export interface Message {
   content: string;
   mediaUrls: string[];
   isRead: boolean;
-  createdAt: Date;
+  createdAt: string; // ISO date string for Redux serialization
   // Joined fields
   senderUsername?: string;
   senderAvatar?: string | null;
@@ -97,14 +97,14 @@ export interface Repost {
   userId: string;
   originalPostId: string;
   comment: string | null;
-  createdAt: Date;
+  createdAt: string; // ISO date string for Redux serialization
 }
 
 export interface Bookmark {
   id: string;
   userId: string;
   postId: string;
-  createdAt: Date;
+  createdAt: string; // ISO date string for Redux serialization
 }
 
 export interface UserProfile {

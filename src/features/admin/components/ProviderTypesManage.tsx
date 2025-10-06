@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 import { useAppDispatch, useAppSelector } from '@/core/store/hooks';
 import {
   fetchProviderTypes,
@@ -10,7 +11,7 @@ import {
   setProviderTypesRealtime,
 } from '../store/adminSlice';
 import { ProviderType, CreateProviderTypeData } from '../domain/Admin.types';
-import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, PencilIcon, TrashIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import { AdminRepository } from '../infrastructure/AdminRepository';
 
 export const ProviderTypesManage = () => {
@@ -40,17 +41,31 @@ export const ProviderTypesManage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (editingType) {
-      await dispatch(updateProviderType({ id: editingType.id, data: formData }));
-    } else {
-      await dispatch(createProviderType(formData));
-    }
-
-    if (manageProviderType.status === 'succeeded') {
+    try {
+      if (editingType) {
+        await dispatch(updateProviderType({ id: editingType.id, data: formData })).unwrap();
+        toast.success(t('admin.providerTypes.updateSuccess'), {
+          icon: <CheckCircleIcon className="w-5 h-5 text-green-500" />,
+          duration: 3000,
+        });
+      } else {
+        await dispatch(createProviderType(formData)).unwrap();
+        toast.success(t('admin.providerTypes.createSuccess'), {
+          icon: <CheckCircleIcon className="w-5 h-5 text-green-500" />,
+          duration: 3000,
+        });
+      }
       setShowForm(false);
       setEditingType(null);
       setFormData({ typeName: '', displayName: '', description: '', isActive: true });
-      void dispatch(fetchProviderTypes());
+    } catch (error: any) {
+      const errorKey = error?.message === 'PROVIDER_TYPE_EXISTS' 
+        ? 'admin.providerTypes.errors.typeExists' 
+        : 'admin.providerTypes.errors.saveFailed';
+      toast.error(t(errorKey), {
+        icon: <XCircleIcon className="w-5 h-5 text-red-500" />,
+        duration: 4000,
+      });
     }
   };
 
@@ -67,8 +82,18 @@ export const ProviderTypesManage = () => {
 
   const handleDelete = async (id: string) => {
     if (confirm(t('admin.providerTypes.deleteConfirm'))) {
-      await dispatch(deleteProviderType(id));
-      void dispatch(fetchProviderTypes());
+      try {
+        await dispatch(deleteProviderType(id)).unwrap();
+        toast.success(t('admin.providerTypes.deleteSuccess'), {
+          icon: <CheckCircleIcon className="w-5 h-5 text-green-500" />,
+          duration: 3000,
+        });
+      } catch (error) {
+        toast.error(t('admin.providerTypes.errors.deleteFailed'), {
+          icon: <XCircleIcon className="w-5 h-5 text-red-500" />,
+          duration: 4000,
+        });
+      }
     }
   };
 

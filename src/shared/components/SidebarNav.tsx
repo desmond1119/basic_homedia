@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
@@ -17,6 +17,8 @@ import {
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
 import { useAuth } from '@/features/auth/context/AuthContext';
+import { useAppDispatch, useAppSelector } from '@/core/store/hooks';
+import { subscribeToProfileUpdates } from '@/features/profile/store/profileSlice';
 
 interface NavItem {
   key: string;
@@ -30,8 +32,23 @@ export const SidebarNav = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.auth.user);
+  const profile = useAppSelector((state) => state.userProfile.currentProfile);
   const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    if (user?.id) {
+      const channel = dispatch(subscribeToProfileUpdates(user.id));
+      return () => {
+        if (channel && typeof channel.unsubscribe === 'function') {
+          channel.unsubscribe();
+        }
+      };
+    }
+    return undefined;
+  }, [user?.id, dispatch]);
 
   const handleLogout = async () => {
     await logout();
@@ -93,18 +110,18 @@ export const SidebarNav = () => {
       roles: ['provider', 'admin'],
     },
     {
+      key: 'admin',
+      icon: ShieldCheckIcon,
+      label: t('nav.admin'),
+      path: '/admin',
+      roles: ['admin'],
+    },
+    {
       key: 'messages',
       icon: ChatBubbleLeftRightIcon,
       label: t('nav.messages'),
       path: '/messages',
       roles: ['homeowner', 'provider', 'admin'],
-    },
-    {
-      key: 'manage',
-      icon: ShieldCheckIcon,
-      label: t('nav.manage'),
-      path: '/admin/manage',
-      roles: ['admin'],
     },
     {
       key: 'settings',
@@ -119,12 +136,13 @@ export const SidebarNav = () => {
     if (!item.roles) return true;
     if (!isAuthenticated) return false;
     const userRole = user?.role;
-    if (!userRole || userRole === 'guest') return false;
+    if (!userRole) return false;
     return item.roles.includes(userRole);
   });
 
   const isActive = (path: string) => {
     if (path === '/inspiration') return location.pathname === '/' || location.pathname === '/inspiration';
+    if (path === '/admin') return location.pathname === '/admin' || location.pathname.startsWith('/admin/');
     return location.pathname.startsWith(path);
   };
 
@@ -208,15 +226,30 @@ export const SidebarNav = () => {
       {isAuthenticated && user && (
         <div className="p-4 border-t border-gray-200">
           <div className="flex items-center gap-3 mb-3">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              onClick={() => navigate(`/profile/${user.id}`)}
-              className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-white font-semibold cursor-pointer shadow-md"
-            >
-              {user.username?.[0]?.toUpperCase() || 'U'}
-            </motion.div>
+            {(user.avatarUrl || profile?.avatarUrl) ? (
+              <motion.img
+                key={user.avatarUrl || profile?.avatarUrl}
+                whileHover={{ scale: 1.05 }}
+                onClick={() => navigate(`/profile/${user.id}`)}
+                src={user.avatarUrl || profile?.avatarUrl || ''}
+                alt={user.username || 'User'}
+                className="w-10 h-10 rounded-full object-cover cursor-pointer shadow-md border-2 border-gray-200"
+                onError={(e) => {
+                  console.error('Failed to load avatar in sidebar:', user.avatarUrl || profile?.avatarUrl);
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            ) : (
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                onClick={() => navigate(`/profile/${user.id}`)}
+                className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-white font-semibold cursor-pointer shadow-md"
+              >
+                {user.username?.[0]?.toUpperCase() || 'U'}
+              </motion.div>
+            )}
             <div className="flex-1 min-w-0">
-              <p className="text-gray-900 font-medium text-sm truncate">{user.username}</p>
+              <p className="text-gray-900 font-medium text-sm truncate">{profile?.fullName || user.username}</p>
               <p className="text-gray-500 text-xs">{user.role}</p>
             </div>
           </div>

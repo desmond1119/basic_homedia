@@ -4,6 +4,7 @@
  */
 
 import { supabase } from '@/core/infrastructure/supabase/client';
+import { Result } from '@/core/domain/base/Result';
 import { ForumMapper } from './ForumMapper';
 import {
   Category,
@@ -16,19 +17,27 @@ import {
 } from '../domain/Forum.types';
 
 export class ForumRepository {
-  async getCategories(): Promise<Category[]> {
-    const { data, error } = await supabase
-      .from('categories')
-      .select('*')
-      .eq('is_active', true)
-      .order('display_order');
+  async getCategories(): Promise<Result<Category[], Error>> {
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order');
 
-    if (error) throw new Error(error.message);
+      if (error) {
+        return Result.fail(new Error(error.message));
+      }
 
-    return (data || []).map(ForumMapper.toCategory);
+      return Result.ok((data || []).map(ForumMapper.toCategory));
+    } catch (error) {
+      return Result.fail(
+        error instanceof Error ? error : new Error('Unknown error')
+      );
+    }
   }
 
-  async createCategory(data: CreateCategoryData): Promise<Result<Category, Error>> {
+  async createCategory(data: CreateCategoryData): Promise<Category> {
     try {
       const { data: category, error } = await supabase
         .from('categories')
@@ -43,14 +52,12 @@ export class ForumRepository {
         .single();
 
       if (error) {
-        return Result.fail(new Error(error.message));
+        throw new Error(error.message);
       }
 
-      return Result.ok(ForumMapper.toCategory(category));
+      return ForumMapper.toCategory(category);
     } catch (error) {
-      return Result.fail(
-        error instanceof Error ? error : new Error('Unknown error')
-      );
+      throw error instanceof Error ? error : new Error('Unknown error');
     }
   }
 
@@ -509,7 +516,7 @@ export class ForumRepository {
     try {
       const { error } = await supabase.from('reposts').insert({
         user_id: userId,
-        original_post_id: postId,
+        post_id: postId,
         comment: comment || null,
       });
 
@@ -534,7 +541,7 @@ export class ForumRepository {
         .from('reposts')
         .delete()
         .eq('user_id', userId)
-        .eq('original_post_id', postId);
+        .eq('post_id', postId);
 
       if (error) {
         return Result.fail(new Error(error.message));
@@ -549,7 +556,7 @@ export class ForumRepository {
   }
 
   // Upload media
-  async uploadMedia(file: File, userId: string): Promise<Result<string, Error>> {
+  async uploadMedia(file: File, userId: string): Promise<string> {
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `${userId}/${Date.now()}.${fileExt}`;
@@ -559,18 +566,16 @@ export class ForumRepository {
         .upload(fileName, file);
 
       if (error) {
-        return Result.fail(new Error(error.message));
+        throw new Error(error.message);
       }
 
       const { data: urlData } = supabase.storage
         .from('forum-media')
         .getPublicUrl(data.path);
 
-      return Result.ok(urlData.publicUrl);
+      return urlData.publicUrl;
     } catch (error) {
-      return Result.fail(
-        error instanceof Error ? error : new Error('Unknown error')
-      );
+      throw error instanceof Error ? error : new Error('Unknown error');
     }
   }
 }

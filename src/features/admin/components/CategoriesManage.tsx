@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 import { useAppDispatch, useAppSelector } from '@/core/store/hooks';
 import { fetchCategories, createCategory, updateCategory, deleteCategory, setCategoriesRealtime } from '../store/adminSlice';
 import { Category, CreateCategoryData } from '../domain/Admin.types';
-import { PlusIcon, PencilIcon, TrashIcon, StarIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, PencilIcon, TrashIcon, StarIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import { AdminRepository } from '../infrastructure/AdminRepository';
 
 export const CategoriesManage = () => {
@@ -29,17 +30,31 @@ export const CategoriesManage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (editingCategory) {
-      await dispatch(updateCategory({ id: editingCategory.id, data: formData }));
-    } else {
-      await dispatch(createCategory(formData));
-    }
-
-    if (manageCategory.status === 'succeeded') {
+    try {
+      if (editingCategory) {
+        await dispatch(updateCategory({ id: editingCategory.id, data: formData })).unwrap();
+        toast.success(t('admin.categories.updateSuccess'), {
+          icon: <CheckCircleIcon className="w-5 h-5 text-green-500" />,
+          duration: 3000,
+        });
+      } else {
+        await dispatch(createCategory(formData)).unwrap();
+        toast.success(t('admin.categories.createSuccess'), {
+          icon: <CheckCircleIcon className="w-5 h-5 text-green-500" />,
+          duration: 3000,
+        });
+      }
       setShowForm(false);
       setEditingCategory(null);
       setFormData({ name: '', description: '', icon: '', featured: false });
-      void dispatch(fetchCategories());
+    } catch (error: any) {
+      const errorKey = error?.message === 'CATEGORY_NAME_EXISTS' 
+        ? 'admin.categories.errors.nameExists' 
+        : 'admin.categories.errors.saveFailed';
+      toast.error(t(errorKey), {
+        icon: <XCircleIcon className="w-5 h-5 text-red-500" />,
+        duration: 4000,
+      });
     }
   };
 
@@ -57,8 +72,18 @@ export const CategoriesManage = () => {
 
   const handleDelete = async (id: string) => {
     if (confirm(t('admin.categories.deleteConfirm'))) {
-      await dispatch(deleteCategory(id));
-      void dispatch(fetchCategories());
+      try {
+        await dispatch(deleteCategory(id)).unwrap();
+        toast.success(t('admin.categories.deleteSuccess'), {
+          icon: <CheckCircleIcon className="w-5 h-5 text-green-500" />,
+          duration: 3000,
+        });
+      } catch (error) {
+        toast.error(t('admin.categories.errors.deleteFailed'), {
+          icon: <XCircleIcon className="w-5 h-5 text-red-500" />,
+          duration: 4000,
+        });
+      }
     }
   };
 

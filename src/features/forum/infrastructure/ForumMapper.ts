@@ -113,7 +113,7 @@ export class ForumMapper {
       icon: row.icon,
       displayOrder: row.display_order,
       isActive: row.is_active,
-      createdAt: new Date(row.created_at),
+      createdAt: row.created_at, // Keep as string for Redux serialization
     };
   }
 
@@ -132,8 +132,8 @@ export class ForumMapper {
       bookmarkCount: row.bookmark_count,
       viewCount: row.view_count,
       isPinned: row.is_pinned,
-      createdAt: new Date(row.created_at),
-      updatedAt: new Date(row.updated_at),
+      createdAt: row.created_at, // Keep as string for Redux serialization
+      updatedAt: row.updated_at, // Keep as string for Redux serialization
       username: row.username,
       userAvatar: row.user_avatar,
       userFullName: row.user_full_name,
@@ -151,8 +151,8 @@ export class ForumMapper {
       content: row.content,
       mediaUrls: row.media_urls || [],
       likeCount: row.like_count,
-      createdAt: new Date(row.created_at),
-      updatedAt: new Date(row.updated_at),
+      createdAt: row.created_at, // Keep as string for Redux serialization
+      updatedAt: row.updated_at, // Keep as string for Redux serialization
       username: row.username,
       userAvatar: row.user_avatar,
       userFullName: row.user_full_name,
@@ -166,7 +166,7 @@ export class ForumMapper {
       userId: row.user_id,
       targetId: row.target_id,
       targetType: row.target_type,
-      createdAt: new Date(row.created_at),
+      createdAt: row.created_at, // Keep as string for Redux serialization
     };
   }
 
@@ -175,7 +175,7 @@ export class ForumMapper {
       id: row.id,
       followerId: row.follower_id,
       followedId: row.followed_id,
-      createdAt: new Date(row.created_at),
+      createdAt: row.created_at, // Keep as string for Redux serialization
     };
   }
 
@@ -187,7 +187,7 @@ export class ForumMapper {
       content: row.content,
       mediaUrls: row.media_urls || [],
       isRead: row.is_read,
-      createdAt: new Date(row.created_at),
+      createdAt: row.created_at, // Keep as string for Redux serialization
     };
   }
 
@@ -197,7 +197,7 @@ export class ForumMapper {
       userId: row.user_id,
       originalPostId: row.original_post_id,
       comment: row.comment,
-      createdAt: new Date(row.created_at),
+      createdAt: row.created_at, // Keep as string for Redux serialization
     };
   }
 
@@ -206,7 +206,7 @@ export class ForumMapper {
       id: row.id,
       userId: row.user_id,
       postId: row.post_id,
-      createdAt: new Date(row.created_at),
+      createdAt: row.created_at, // Keep as string for Redux serialization
     };
   }
 }

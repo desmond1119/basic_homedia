@@ -62,6 +62,7 @@ export class ProfileRepository {
         is_active: userData.is_active ?? true,
         created_at: userData.created_at || new Date().toISOString(),
         updated_at: userData.updated_at || userData.created_at || new Date().toISOString(),
+        last_username_change: (userData as any).last_username_change || null,
         follower_count: 0,
         following_count: 0,
         post_count: 0,
@@ -77,20 +78,44 @@ export class ProfileRepository {
     }
   }
 
-  // Update user profile
-  async updateProfile(userId: string, data: UpdateProfileData): Promise<UserProfile> {
+  // Update user profile with optional avatar upload
+  async updateProfile(userId: string, data: UpdateProfileData, avatarFile?: File): Promise<UserProfile> {
     try {
-      // Validate username uniqueness if changed
+      // Validate username uniqueness and cooldown if changed
       if (data.username) {
+        // Check uniqueness (case-insensitive)
         const { data: existing, error: checkError } = await supabase
           .from('app_users')
           .select('id')
-          .eq('username', data.username)
+          .ilike('username', data.username)
           .neq('id', userId)
           .maybeSingle();
 
         if (checkError) throw new Error(checkError.message);
-        if (existing) throw new Error('Username already taken');
+        if (existing) throw new Error('USERNAME_TAKEN');
+
+        // Check cooldown (14 days)
+        const { data: currentUser, error: userError } = await supabase
+          .from('app_users')
+          .select('username, last_username_change')
+          .eq('id', userId)
+          .single();
+
+        if (userError) throw new Error(userError.message);
+
+        // Only check cooldown if username is actually changing
+        if (currentUser && (currentUser as any).username !== data.username) {
+          const lastChange = (currentUser as any).last_username_change;
+          if (lastChange) {
+            const lastChangeDate = new Date(lastChange);
+            const daysSinceChange = (Date.now() - lastChangeDate.getTime()) / (1000 * 60 * 60 * 24);
+            
+            if (daysSinceChange < 14) {
+              const daysRemaining = Math.ceil(14 - daysSinceChange);
+              throw new Error(`USERNAME_COOLDOWN:${daysRemaining}`);
+            }
+          }
+        }
       }
 
       // Validate bio length
@@ -106,6 +131,12 @@ export class ProfileRepository {
       if (data.website !== undefined) updateData.website = data.website;
       if (data.companyName !== undefined) updateData.company_name = data.companyName;
       if (data.avatarUrl !== undefined) updateData.avatar_url = data.avatarUrl;
+
+      // Handle avatar upload if file provided
+      if (avatarFile) {
+        const avatarUrl = await this.uploadAvatar(userId, avatarFile);
+        updateData.avatar_url = avatarUrl;
+      }
 
       const { error } = await supabase
         .from('app_users')
@@ -130,23 +161,46 @@ export class ProfileRepository {
   // Upload avatar to Supabase Storage
   async uploadAvatar(userId: string, file: File): Promise<string> {
     try {
+      // Validate file size (5MB max)
+      const maxSize = 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        throw new Error('Avatar image must be less than 5MB');
+      }
+
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        throw new Error('Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed');
+      }
+
       const fileExt = file.name.split('.').pop();
       const fileName = `${userId}/avatar-${Date.now()}.${fileExt}`;
 
-      const { error: uploadError } = await supabase.storage
+      console.log('Uploading avatar:', fileName, 'Size:', file.size, 'Type:', file.type);
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(fileName, file, { upsert: true });
+        .upload(fileName, file, { 
+          upsert: true,
+          contentType: file.type,
+        });
 
       if (uploadError) {
-        throw new Error(uploadError.message);
+        console.error('Avatar upload error:', uploadError);
+        throw new Error(`Upload failed: ${uploadError.message}`);
       }
+
+      console.log('Avatar uploaded successfully:', uploadData);
 
       const { data: urlData } = supabase.storage
         .from('avatars')
         .getPublicUrl(fileName);
 
+      console.log('Avatar public URL:', urlData.publicUrl);
+
       return urlData.publicUrl;
     } catch (error) {
+      console.error('Avatar upload exception:', error);
       throw error instanceof Error ? error : new Error('Unknown error');
     }
   }

@@ -61,10 +61,11 @@ export const mapAppUserToProfile = (
   website: row.website,
   companyName: row.company_name,
   role: row.role,
-  providerTypeId: null, // Not in current schema
+  providerTypeId: null,
   isActive: row.is_active ?? true,
   createdAt: new Date(row.created_at || Date.now()),
   updatedAt: new Date(row.updated_at || Date.now()),
+  lastUsernameChange: (row as any).last_username_change ? new Date((row as any).last_username_change) : null,
   postCount: stats?.posts_count ?? 0,
   followerCount: stats?.followers_count ?? 0,
   followingCount: stats?.following_count ?? 0,

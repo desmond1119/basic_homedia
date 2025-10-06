@@ -9,6 +9,7 @@ import {
   mapAppUserToProfile, 
   mapUpdateDataToDbColumns 
 } from '../infrastructure/types';
+import { setAuthUser } from '@/features/auth/store/authSlice';
 
 interface ProfileState {
   currentProfile: UserProfile | null;
@@ -21,6 +22,7 @@ interface ProfileState {
   fetchBookmarks: AsyncState;
   fetchFollowers: AsyncState;
   fetchFollowing: AsyncState;
+  // Note: realtimeChannel removed - should be managed outside Redux to avoid serialization issues
 }
 
 const initialState: ProfileState = {
@@ -52,7 +54,7 @@ export const fetchUserProfile = createAsyncThunk<UserProfile | null, string>(
 
     // Fetch stats separately
     const { data: statsData } = await supabase
-      .rpc('get_user_stats', { user_id: userData.id })
+      .rpc('get_user_stats', { user_uuid: userData.id })
       .maybeSingle();
 
     // Normalize stats to handle different formats
@@ -66,29 +68,125 @@ export const fetchUserProfile = createAsyncThunk<UserProfile | null, string>(
   }
 );
 
-export const updateUserProfile = createAsyncThunk<UserProfile | null, { userId: string; data: UpdateProfileData }>(
+export const updateUserProfile = createAsyncThunk<UserProfile | null, { userId: string; data: UpdateProfileData; avatarFile?: File }>(
   'profile/updateUserProfile',
-  async ({ userId, data }, { dispatch }) => {
-    const dbData = mapUpdateDataToDbColumns(data);
-    const { error } = await supabase.from('app_users').update(dbData).eq('id', userId);
-    
-    if (error) {
-      console.error('Failed to update profile:', error);
-      return null;
+  async ({ userId, data, avatarFile }, { dispatch, rejectWithValue }) => {
+    try {
+      let dbData = mapUpdateDataToDbColumns(data);
+      
+      // Handle avatar upload if file provided
+      if (avatarFile) {
+        const maxSize = 5 * 1024 * 1024;
+        if (avatarFile.size > maxSize) {
+          throw new Error('AVATAR_TOO_LARGE');
+        }
+
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        if (!allowedTypes.includes(avatarFile.type)) {
+          throw new Error('INVALID_FILE_TYPE');
+        }
+
+        const fileName = `${userId}/avatar-${Date.now()}.${avatarFile.name.split('.').pop()}`;
+        
+        console.log('Uploading avatar:', fileName, 'Size:', avatarFile.size);
+        
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('avatars')
+          .upload(fileName, avatarFile, { 
+            upsert: true,
+            contentType: avatarFile.type,
+          });
+        
+        if (uploadError) {
+          console.error('Avatar upload failed:', uploadError);
+          throw new Error(`AVATAR_UPLOAD_FAILED:${uploadError.message}`);
+        }
+        
+        console.log('Avatar uploaded:', uploadData);
+        
+        const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(fileName);
+        dbData = { ...dbData, avatar_url: urlData.publicUrl };
+        
+        console.log('Avatar URL:', urlData.publicUrl);
+      }
+      
+      const { error } = await supabase.from('app_users').update(dbData).eq('id', userId);
+      
+      if (error) {
+        console.error('Failed to update profile:', error);
+        throw new Error(error.message);
+      }
+      
+      const result = await dispatch(fetchUserProfile(userId));
+      const updatedProfile = result.payload as UserProfile | null;
+      
+      // Update auth slice with new avatar/name
+      if (updatedProfile) {
+        dispatch(setAuthUser({
+          id: updatedProfile.id,
+          email: updatedProfile.email,
+          username: updatedProfile.username,
+          role: updatedProfile.role,
+          avatarUrl: updatedProfile.avatarUrl || undefined,
+        }));
+      }
+      
+      return updatedProfile;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to update profile';
+      console.error('Update profile error:', message);
+      return rejectWithValue(message);
     }
-    
-    const result = await dispatch(fetchUserProfile(userId));
-    return result.payload as UserProfile | null;
   }
 );
 
 export const uploadUserAvatar = createAsyncThunk<string, { userId: string; file: File }>(
   'profile/uploadUserAvatar',
-  async ({ userId, file }) => {
-    const fileName = `${userId}/avatar-${Date.now()}.${file.name.split('.').pop()}`;
-    await supabase.storage.from('avatars').upload(fileName, file, { upsert: true });
-    const { data } = supabase.storage.from('avatars').getPublicUrl(fileName);
-    return data.publicUrl;
+  async ({ userId, file }, { rejectWithValue }) => {
+    try {
+      // Validate file size (5MB max)
+      const maxSize = 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        throw new Error('AVATAR_TOO_LARGE');
+      }
+
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        throw new Error('INVALID_FILE_TYPE');
+      }
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${userId}/avatar-${Date.now()}.${fileExt}`;
+
+      console.log('Uploading avatar:', fileName, 'Size:', file.size, 'Type:', file.type);
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file, { 
+          upsert: true,
+          contentType: file.type,
+        });
+
+      if (uploadError) {
+        console.error('Avatar upload error:', uploadError);
+        throw new Error(`Upload failed: ${uploadError.message}`);
+      }
+
+      console.log('Avatar uploaded successfully:', uploadData);
+
+      const { data: urlData } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      console.log('Avatar public URL:', urlData.publicUrl);
+
+      return urlData.publicUrl;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to upload avatar';
+      console.error('Upload avatar exception:', message, error);
+      return rejectWithValue(message);
+    }
   }
 );
 
@@ -147,6 +245,14 @@ const profileSlice = createSlice({
       state.followers = [];
       state.following = [];
     },
+    setProfile: (state, action) => {
+      state.currentProfile = action.payload;
+    },
+    updateProfileRealtime: (state, action) => {
+      if (state.currentProfile && action.payload.id === state.currentProfile.id) {
+        state.currentProfile = { ...state.currentProfile, ...action.payload };
+      }
+    },
   },
   extraReducers: (builder) => {
     // Fetch Profile
@@ -182,14 +288,17 @@ const profileSlice = createSlice({
       .addCase(uploadUserAvatar.pending, (state) => {
         state.uploadAvatar.status = 'pending';
       })
-      .addCase(uploadUserAvatar.fulfilled, (state) => {
+      .addCase(uploadUserAvatar.fulfilled, (state, action) => {
         state.uploadAvatar.status = 'succeeded';
+        // Update current profile with new avatar URL
+        if (state.currentProfile) {
+          state.currentProfile = { ...state.currentProfile, avatarUrl: action.payload };
+        }
       })
       .addCase(uploadUserAvatar.rejected, (state, action) => {
         state.uploadAvatar.status = 'failed';
         state.uploadAvatar.error = action.error.message ?? 'Failed to upload avatar';
       });
-
     // Fetch Bookmarks
     builder
       .addCase(fetchUserBookmarks.pending, (state) => {
@@ -234,5 +343,43 @@ const profileSlice = createSlice({
   },
 });
 
-export const { clearProfile } = profileSlice.actions;
+export const { clearProfile, setProfile, updateProfileRealtime } = profileSlice.actions;
 export const userProfileReducer = profileSlice.reducer;
+
+// Realtime subscription helper
+export const subscribeToProfileUpdates = (userId: string) => (dispatch: any) => {
+  const channel = supabase
+    .channel(`profile:${userId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'app_users',
+        filter: `id=eq.${userId}`,
+      },
+      (payload) => {
+        const updated = payload.new as AppUserRow;
+        dispatch(updateProfileRealtime({
+          id: updated.id,
+          username: updated.username,
+          fullName: updated.full_name,
+          avatarUrl: updated.avatar_url,
+          bio: updated.bio,
+        }));
+        
+        // Update auth slice
+        dispatch(setAuthUser({
+          id: updated.id,
+          email: updated.email,
+          username: updated.username,
+          role: updated.role,
+          avatarUrl: updated.avatar_url || undefined,
+        }));
+      }
+    )
+    .subscribe();
+  
+  // Return channel for external management (not stored in Redux)
+  return channel;
+};

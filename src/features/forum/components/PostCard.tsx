@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '@/core/store/hooks';
 import { toggleLike, toggleBookmark, toggleRepost } from '../store/forumSlice';
 import { Post } from '../domain/Forum.types';
@@ -14,7 +13,6 @@ interface PostCardProps {
 }
 
 export const PostCard = ({ post, index = 0 }: PostCardProps) => {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
@@ -66,7 +64,7 @@ export const PostCard = ({ post, index = 0 }: PostCardProps) => {
       transition={{ duration: 0.4, delay: index * 0.05 }}
       whileHover={{ y: -4, scale: 1.01 }}
       onClick={() => navigate(`/forum/post/${post.id}`)}
-      className="bg-gray-900 rounded-2xl cursor-pointer overflow-hidden border border-gray-800 hover:border-gray-700 transition-all"
+      className="bg-white rounded-2xl cursor-pointer overflow-hidden border border-gray-200 hover:shadow-lg transition-all"
     >
       <div className="p-6 pb-4">
         <div className="flex items-center gap-3 mb-4">
@@ -81,10 +79,10 @@ export const PostCard = ({ post, index = 0 }: PostCardProps) => {
               <img
                 src={post.userAvatar}
                 alt={post.username}
-                className="h-10 w-10 rounded-full object-cover ring-2 ring-gray-700"
+                className="h-10 w-10 rounded-full object-cover ring-2 ring-gray-200"
               />
             ) : (
-              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center ring-2 ring-gray-700">
+              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-red-400 to-red-500 flex items-center justify-center">
                 <span className="text-white font-semibold text-sm">
                   {post.username?.charAt(0).toUpperCase()}
                 </span>
@@ -92,24 +90,26 @@ export const PostCard = ({ post, index = 0 }: PostCardProps) => {
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-white truncate">
-              {post.userFullName || post.username}
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-semibold text-gray-900 truncate">
+                {post.userFullName || post.username}
+              </p>
+              <span className="text-xs text-gray-400">@{post.username}</span>
+            </div>
             <p className="text-xs text-gray-500">
               {new Date(post.createdAt).toLocaleDateString()} • {post.categoryName}
             </p>
           </div>
         </div>
 
-        <h3 className="text-xl font-bold text-white mb-3 leading-tight line-clamp-2">{post.title}</h3>
-        <p className="text-gray-300 line-clamp-3 mb-4 leading-relaxed">{post.content}</p>
-
+        <h3 className="text-xl font-bold text-gray-900 mb-3 leading-tight line-clamp-2">{post.title}</h3>
+        <p className="text-gray-600 line-clamp-3 mb-4 leading-relaxed">{post.content}</p>
         {post.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-4">
             {post.tags.slice(0, 3).map((tag, i) => (
               <span
                 key={i}
-                className="px-3 py-1 bg-gray-800 text-gray-400 text-xs rounded-full border border-gray-700 hover:border-gray-600 transition-colors"
+                className="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded-full hover:bg-gray-200 transition-colors"
               >
                 #{tag}
               </span>
@@ -123,7 +123,7 @@ export const PostCard = ({ post, index = 0 }: PostCardProps) => {
               <motion.div
                 key={i}
                 whileHover={{ scale: 1.05 }}
-                className="relative aspect-square rounded-lg overflow-hidden bg-gray-800"
+                className="relative aspect-square rounded-lg overflow-hidden bg-gray-100"
               >
                 <img
                   src={url}
@@ -136,13 +136,13 @@ export const PostCard = ({ post, index = 0 }: PostCardProps) => {
         )}
       </div>
 
-      <div className="px-6 py-4 border-t border-gray-800 flex items-center justify-between">
+      <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={handleLike}
           className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
-            isLiked ? 'text-red-500 bg-red-500/10' : 'text-gray-400 hover:text-red-500 hover:bg-red-500/5'
+            isLiked ? 'text-red-500 bg-red-50' : 'text-gray-500 hover:text-red-500 hover:bg-red-50'
           }`}
         >
           {isLiked ? <HeartSolid className="w-5 h-5" /> : <HeartIcon className="w-5 h-5" />}
@@ -156,7 +156,7 @@ export const PostCard = ({ post, index = 0 }: PostCardProps) => {
             e.stopPropagation();
             navigate(`/forum/post/${post.id}`);
           }}
-          className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-400 hover:text-blue-400 hover:bg-blue-400/5 transition-colors"
+          className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-500 hover:text-blue-500 hover:bg-blue-50 transition-colors"
         >
           <ChatBubbleLeftIcon className="w-5 h-5" />
           <span className="text-sm font-medium">{post.commentCount}</span>
@@ -167,7 +167,7 @@ export const PostCard = ({ post, index = 0 }: PostCardProps) => {
           whileTap={{ scale: 0.9 }}
           onClick={handleRepost}
           className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
-            isReposted ? 'text-green-500 bg-green-500/10' : 'text-gray-400 hover:text-green-500 hover:bg-green-500/5'
+            isReposted ? 'text-green-500 bg-green-50' : 'text-gray-500 hover:text-green-500 hover:bg-green-50'
           }`}
         >
           <ArrowPathIcon className="w-5 h-5" />
@@ -179,7 +179,7 @@ export const PostCard = ({ post, index = 0 }: PostCardProps) => {
           whileTap={{ scale: 0.9 }}
           onClick={handleBookmark}
           className={`p-2 rounded-lg transition-colors ${
-            isBookmarked ? 'text-yellow-500 bg-yellow-500/10' : 'text-gray-400 hover:text-yellow-500 hover:bg-yellow-500/5'
+            isBookmarked ? 'text-yellow-500 bg-yellow-50' : 'text-gray-500 hover:text-yellow-500 hover:bg-yellow-50'
           }`}
         >
           {isBookmarked ? <BookmarkSolid className="w-5 h-5" /> : <BookmarkIcon className="w-5 h-5" />}
