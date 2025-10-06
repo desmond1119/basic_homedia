@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { ProfileRepository } from '../infrastructure/ProfileRepository';
+import { supabase } from '@/core/infrastructure/supabase/client';
 import { AsyncState, initialAsyncState } from '@/core/store/base/LoadingState';
 import { UserProfile, UpdateProfileData, BookmarkedPost, FollowerUser } from '../domain/Profile.types';
 
@@ -29,11 +29,37 @@ const initialState: ProfileState = {
   fetchFollowing: initialAsyncState,
 };
 
-const profileRepository = new ProfileRepository();
-
-export const fetchUserProfile = createAsyncThunk<UserProfile | null, string>(
+export const fetchUserProfile = createAsyncThunk<any, string>(
   'profile/fetchUserProfile',
-  async (userId) => await profileRepository.getProfile(userId)
+  async (userId) => {
+    const { data, error } = await supabase
+      .from('app_users')
+      .select('*')
+      .or(`id.eq.${userId},auth_id.eq.${userId}`)
+      .maybeSingle();
+    
+    if (error || !data) return null;
+    
+    return {
+      id: data.id,
+      username: data.username,
+      email: data.email,
+      fullName: data.full_name,
+      avatarUrl: data.avatar_url,
+      bio: data.bio,
+      location: data.location,
+      website: data.website,
+      companyName: data.company_name,
+      role: data.role,
+      isActive: data.is_active ?? true,
+      createdAt: new Date(data.created_at || Date.now()),
+      updatedAt: new Date(data.updated_at || Date.now()),
+      postCount: 0,
+      followerCount: 0,
+      followingCount: 0,
+      bookmarkCount: 0,
+    };
+  }
 );
 
 export const updateUserProfile = createAsyncThunk<
