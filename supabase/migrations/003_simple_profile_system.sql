@@ -55,11 +55,13 @@
     END;
     $$ LANGUAGE plpgsql SECURITY DEFINER;
 
-    -- Drop existing function if it exists
+    -- Drop all versions of the function (with any signature)
 DROP FUNCTION IF EXISTS get_user_stats(UUID);
+DROP FUNCTION IF EXISTS get_user_stats(user_uuid UUID);
+DROP FUNCTION IF EXISTS get_user_stats;
 
 -- Simple stats calculation (no complex joins)
-CREATE OR REPLACE FUNCTION get_user_stats(user_id UUID)
+CREATE FUNCTION get_user_stats(user_id UUID)
 RETURNS TABLE (
   posts_count BIGINT,
   followers_count BIGINT,
