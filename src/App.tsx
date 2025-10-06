@@ -101,10 +101,18 @@ function AppContent() {
               }
             />
             <Route
-              path="/admin"
+              path="/admin/*"
               element={
                 <ProtectedRoute allowedRoles={['admin']}>
                   <AdminDashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/provider-dashboard"
+              element={
+                <ProtectedRoute allowedRoles={['provider']}>
+                  <PlaceholderPage title="Provider Dashboard" description="Coming Soon" />
                 </ProtectedRoute>
               }
             />

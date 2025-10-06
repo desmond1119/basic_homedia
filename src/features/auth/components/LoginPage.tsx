@@ -23,11 +23,18 @@ export const LoginPage = () => {
     password: '',
   });
 
+  const { user } = useAppSelector((state) => state.auth);
+
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/forum');
+    if (isAuthenticated && user) {
+      const redirectPath = user.role === 'admin' 
+        ? '/admin' 
+        : user.role === 'provider' 
+        ? '/provider-dashboard' 
+        : '/profile/' + user.id;
+      navigate(redirectPath);
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, user, navigate]);
 
   useEffect(() => {
     return () => {
@@ -42,7 +49,13 @@ export const LoginPage = () => {
       password: formData.password,
     }));
     if (loginUser.fulfilled.match(result)) {
-      navigate('/forum');
+      const userData = result.payload.user;
+      const redirectPath = userData.role === 'admin' 
+        ? '/admin' 
+        : userData.role === 'provider' 
+        ? '/provider-dashboard' 
+        : '/profile/' + userData.id;
+      navigate(redirectPath);
     }
   };
 
