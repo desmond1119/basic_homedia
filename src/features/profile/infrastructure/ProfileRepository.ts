@@ -54,11 +54,11 @@ export class ProfileRepository {
         full_name: userData.full_name || null,
         avatar_url: userData.avatar_url || null,
         bio: userData.bio || null,
-        location: null as string | null,
-        website: null as string | null,
+        location: (userData as any).location || null,
+        website: (userData as any).website || null,
         company_name: userData.company_name || null,
         role: userData.role,
-        provider_type_id: userData.provider_type_id || null,
+        provider_type_id: null,
         is_active: userData.is_active ?? true,
         created_at: userData.created_at || new Date().toISOString(),
         updated_at: userData.updated_at || userData.created_at || new Date().toISOString(),
@@ -174,7 +174,7 @@ export class ProfileRepository {
       const { data, error } = await supabase
         .from('follows')
         .select('follower_id, app_users!follows_follower_id_fkey(id, username, full_name, avatar_url, bio)')
-        .eq('followed_id', userId);
+        .eq('following_id', userId);
 
       if (error) {
         throw new Error(error.message);
@@ -200,7 +200,7 @@ export class ProfileRepository {
     try {
       const { data, error } = await supabase
         .from('follows')
-        .select('followed_id, app_users!follows_followed_id_fkey(id, username, full_name, avatar_url, bio)')
+        .select('following_id, app_users!follows_following_id_fkey(id, username, full_name, avatar_url, bio)')
         .eq('follower_id', userId);
 
       if (error) {
