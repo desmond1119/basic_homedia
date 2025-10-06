@@ -1,6 +1,6 @@
 import { vi } from 'vitest';
 
-export const mockSupabaseClient = {
+export const mockSupabaseClient: any = {
   from: vi.fn(() => mockSupabaseClient),
   select: vi.fn(() => mockSupabaseClient),
   insert: vi.fn(() => mockSupabaseClient),
@@ -11,6 +11,16 @@ export const mockSupabaseClient = {
   range: vi.fn(() => mockSupabaseClient),
   order: vi.fn(() => mockSupabaseClient),
   rpc: vi.fn(() => mockSupabaseClient),
+  auth: {
+    signUp: vi.fn(),
+    signInWithPassword: vi.fn(),
+    signOut: vi.fn(),
+    getSession: vi.fn(),
+    getUser: vi.fn(),
+    onAuthStateChange: vi.fn(() => ({
+      data: { subscription: { unsubscribe: vi.fn() } },
+    })),
+  },
   storage: {
     from: vi.fn(() => ({
       upload: vi.fn(),
@@ -20,10 +30,17 @@ export const mockSupabaseClient = {
 };
 
 export const resetMocks = () => {
-  Object.values(mockSupabaseClient).forEach(mock => {
-    if (typeof mock === 'function') mock.mockClear();
+  Object.values(mockSupabaseClient).forEach((mock: any) => {
+    if (typeof mock === 'function' && mock.mockClear) {
+      mock.mockClear();
+    }
   });
-  if (mockSupabaseClient.storage.from) {
-    (mockSupabaseClient.storage.from as ReturnType<typeof vi.fn>).mockClear();
+  if (mockSupabaseClient.auth) {
+    Object.values(mockSupabaseClient.auth).forEach((mock: any) => {
+      if (mock?.mockClear) mock.mockClear();
+    });
+  }
+  if (mockSupabaseClient.storage?.from?.mockClear) {
+    mockSupabaseClient.storage.from.mockClear();
   }
 };
