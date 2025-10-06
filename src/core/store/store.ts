@@ -1,10 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { authReducer } from '@/features/auth/store/authSlice';
-import { providerReducer } from '@/features/provider/store/providerSlice';
+import providerReducer from '@/features/provider/application/providerSlice';
 import { portfolioReducer } from '@/features/portfolio/store/portfolioSlice';
 import { profileStatsReducer } from '@/features/profile/store/profileStatsSlice';
 import { userProfileReducer } from '@/features/profile/store/profileSlice';
-import { forumReducer } from '@/features/forum/store/forumSlice';
+import forumReducer from '@/features/forum/application/forumSlice';
 import { forumApi } from '@/features/forum/api/forumApi';
 import { inspirationReducer } from '@/features/inspiration/store/inspirationSlice';
 import { adminReducer } from '@/features/admin/store/adminSlice';
