@@ -373,7 +373,7 @@
       "rating": "Rating 4.5+",
       "clear": "Clear Filters"
     },
-    "hero": {
+    "heroSection": {
       "tagline": "CURATED SPACES",
       "eyebrow": "CURATED SPACES",
       "title": "Discover living spaces by top providers",
@@ -399,7 +399,7 @@
       "premium": "Premium ($$)",
       "luxury": "Luxury ($$$)"
     },
-    "sort": {
+    "sortOptions": {
       "trending": "Trending",
       "newest": "Newest",
       "popular": "Most Popular"
