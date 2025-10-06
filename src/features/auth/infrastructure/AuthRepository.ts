@@ -14,8 +14,6 @@ const isDuplicateKeyError = (error: { code?: string } | null | undefined) =>
 const isRecursionError = (error: { code?: string; message?: string } | null | undefined) =>
   error?.code === 'P0001' || error?.message?.includes('infinite recursion');
 
-const isProfileExistsError = (error: { code?: string; message?: string } | null | undefined) =>
-  isDuplicateKeyError(error) || isRecursionError(error);
 
 export class AuthRepository {
   async register(data: RegisterData): Promise<Result<AuthSession, Error>> {
@@ -56,43 +54,37 @@ export class AuthRepository {
         return Result.fail(new Error('Registration failed: No user created'));
       }
 
-      // 3. Insert into app_users table
       const { error: insertError } = await supabase
         .from('app_users')
-        .upsert(
-          {
-            id: authData.user.id,
-            username: data.username,
-            email: data.email,
-            role: data.role,
-            provider_type_id: data.providerTypeId ?? null,
-            full_name: data.fullName ?? null,
-            phone: data.phone ?? null,
-          },
-          { onConflict: 'id', ignoreDuplicates: false }
-        );
+        .insert({
+          auth_id: authData.user.id,
+          username: data.username,
+          email: data.email,
+          role: data.role,
+          full_name: data.fullName ?? null,
+          phone: data.phone ?? null,
+          email_verified: authData.user.email_confirmed_at !== null,
+        });
 
-      if (insertError && !isProfileExistsError(insertError)) {
+      if (insertError && insertError.code !== '23505') {
         return Result.fail(new Error(`Profile creation failed: ${insertError.message}`));
       }
 
-      // 4. Handle email confirmation scenario
       if (!authData.session) {
         return Result.fail(new Error('Please check your email to verify your account'));
       }
 
-      // 5. Fetch complete user profile
-      const { data: profileData, error: profileError } = await supabase
-        .from('user_profiles')
+      const { data: profileData } = await supabase
+        .from('app_users')
         .select('*')
-        .eq('id', authData.user.id)
+        .eq('auth_id', authData.user.id)
         .maybeSingle();
 
-      if (profileError || !profileData || !profileData.id) {
+      if (!profileData) {
         return Result.fail(new Error('Failed to fetch user profile'));
       }
 
-      const appUser = AuthMapper.toAppUser(profileData as Parameters<typeof AuthMapper.toAppUser>[0]);
+      const appUser = AuthMapper.toAppUser(profileData as any);
       const session = AuthMapper.toAuthSession(authData.session, appUser);
 
       return Result.ok(session);
@@ -105,7 +97,6 @@ export class AuthRepository {
 
   async login(credentials: LoginCredentials): Promise<Result<AuthSession, Error>> {
     try {
-      // 1. Sign in with Supabase Auth
       const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
         email: credentials.email,
         password: credentials.password,
@@ -119,32 +110,19 @@ export class AuthRepository {
         return Result.fail(new Error('Login failed: No session data'));
       }
 
-      // 2. Wait a bit for trigger to complete (if just registered)
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      // 3. Fetch user profile with retry
       let profileData = null;
-      let profileError = null;
       
-      for (let attempt = 0; attempt < 3; attempt++) {
-        const result = await supabase
-          .from('user_profiles')
-          .select('*')
-          .eq('id', authData.user.id)
-          .maybeSingle();
-        
-        profileData = result.data;
-        profileError = result.error;
-        
-        if (profileData && profileData.id) break;
-        
-        if (attempt < 2) {
-          await new Promise(resolve => setTimeout(resolve, 200));
-        }
-      }
+      const { data: appUserData } = await supabase
+        .from('app_users')
+        .select('*')
+        .eq('auth_id', authData.user.id)
+        .maybeSingle();
 
-      // 4. If still no profile, try to create it manually
-      if (!profileData || !profileData.id) {
+      if (appUserData) {
+        profileData = appUserData;
+      } else {
         const emailPrefix = authData.user.email?.split('@')[0] || '';
         const generatedUsername = emailPrefix.length >= 3 
           ? emailPrefix 
@@ -152,44 +130,39 @@ export class AuthRepository {
 
         const { error: createError } = await supabase
           .from('app_users')
-          .upsert(
-            {
-              id: authData.user.id,
-              username: authData.user.user_metadata?.username || generatedUsername,
-              email: authData.user.email || '',
-              role: (authData.user.user_metadata?.role || 'homeowner') as 'admin' | 'provider' | 'homeowner',
-              full_name: authData.user.user_metadata?.fullName || authData.user.user_metadata?.full_name,
-              phone: authData.user.user_metadata?.phone,
-            },
-            { onConflict: 'id', ignoreDuplicates: false }
-          );
+          .insert({
+            auth_id: authData.user.id,
+            username: authData.user.user_metadata?.username || generatedUsername,
+            email: authData.user.email || '',
+            role: (authData.user.user_metadata?.role || 'homeowner') as 'admin' | 'provider' | 'homeowner',
+            full_name: authData.user.user_metadata?.fullName || authData.user.user_metadata?.full_name,
+            phone: authData.user.user_metadata?.phone,
+            email_verified: authData.user.email_confirmed_at !== null,
+          });
 
-        if (createError && !isProfileExistsError(createError)) {
-          return Result.fail(new Error(`Failed to create user profile: ${createError.message}`));
+        if (createError && createError.code !== '23505') {
+          return Result.fail(new Error(`Failed to create profile: ${createError.message}`));
         }
 
-        // Retry fetch after manual creation
-        const retryResult = await supabase
-          .from('user_profiles')
+        const { data: retryData } = await supabase
+          .from('app_users')
           .select('*')
-          .eq('id', authData.user.id)
+          .eq('auth_id', authData.user.id)
           .maybeSingle();
         
-        profileData = retryResult.data;
-        profileError = retryResult.error;
+        profileData = retryData;
       }
 
-      if (profileError || !profileData || !profileData.id) {
-        return Result.fail(new Error(`Failed to fetch user profile: ${profileError?.message || 'No data'}`));
+      if (!profileData) {
+        return Result.fail(new Error('Failed to fetch user profile'));
       }
 
-      // 4. Check if user is active
       if (!profileData.is_active) {
         await supabase.auth.signOut();
         return Result.fail(new Error('Account is deactivated'));
       }
 
-      const appUser = AuthMapper.toAppUser(profileData as Parameters<typeof AuthMapper.toAppUser>[0]);
+      const appUser = AuthMapper.toAppUser(profileData as any);
       const session = AuthMapper.toAuthSession(authData.session, appUser);
 
       return Result.ok(session);
@@ -228,17 +201,17 @@ export class AuthRepository {
         return Result.ok(null);
       }
 
-      const { data: profileData, error: profileError } = await supabase
-        .from('user_profiles')
+      const { data: profileData } = await supabase
+        .from('app_users')
         .select('*')
-        .eq('id', sessionData.session.user.id)
+        .eq('auth_id', sessionData.session.user.id)
         .maybeSingle();
 
-      if (profileError || !profileData || !profileData.id) {
+      if (!profileData) {
         return Result.ok(null);
       }
 
-      const appUser = AuthMapper.toAppUser(profileData as Parameters<typeof AuthMapper.toAppUser>[0]);
+      const appUser = AuthMapper.toAppUser(profileData as any);
       const session = AuthMapper.toAuthSession(sessionData.session, appUser);
 
       return Result.ok(session);
@@ -262,7 +235,7 @@ export class AuthRepository {
       }
 
       const providerTypes = (data ?? []).map((row) => 
-        AuthMapper.toProviderTypeOption(row as Parameters<typeof AuthMapper.toProviderTypeOption>[0])
+        AuthMapper.toProviderTypeOption(row as any)
       );
       return Result.ok(providerTypes);
     } catch (error) {
